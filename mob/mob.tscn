@@ -6,7 +6,7 @@
 [ext_resource type="AudioStream" uid="uid://swgly5c3ppji" path="res://mob/mob_ko.wav" id="4_jkfaf"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_uvm4r"]
-radius = 0.93250734
+radius = 0.24346912
 
 [node name="Mob" type="RigidBody3D" unique_id=2138952786 groups=["mobs"]]
 transform = Transform3D(0.9999999, 0, 0, 0, 0.9999999, -3.434848e-05, 0, 3.434848e-05, 1, 0, 0, 0)

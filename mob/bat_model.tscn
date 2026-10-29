@@ -37,7 +37,7 @@ _data = {
 
 [node name="bat_model" unique_id=476857454 instance=ExtResource("1_12yrx")]
 
-[node name="Skeleton3D" parent="Armature" parent_id_path=PackedInt32Array(1757816714) index="0" unique_id=1234076446]
+[node name="Skeleton3D" parent="Armature" parent_id_path=PackedInt32Array(1747253512) index="0" unique_id=341558594]
 bones/0/position = Vector3(0, -0.007400004, 0)
 bones/1/rotation = Quaternion(-0.028654926, 0.18848532, -0.6867176, 0.7014778)
 bones/2/rotation = Quaternion(-0.056015443, -0.016041048, 0.27483782, 0.9597235)
@@ -52,8 +52,8 @@ bones/10/position = Vector3(-0.1309921, -0.22739176, -0.087851465)
 bones/10/rotation = Quaternion(0.26196837, -0.083455116, -0.26575127, 0.9240044)
 bones/11/rotation = Quaternion(2.5423756e-08, 0.69088244, 0.72296715, 3.637758e-08)
 
-[node name="bat" parent="Armature/Skeleton3D" index="0" unique_id=401358475]
+[node name="bat" parent="Armature/Skeleton3D" index="0" unique_id=884993647]
 surface_material_override/0 = ExtResource("3_dmdl0")
 
-[node name="AnimationPlayer" parent="." index="1" unique_id=496389042]
+[node name="AnimationPlayer" parent="." index="1" unique_id=1823389869]
 libraries/Custom = SubResource("AnimationLibrary_xl0h5")

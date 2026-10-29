@@ -5,8 +5,6 @@
 [ext_resource type="PackedScene" uid="uid://obox1utpmqjq" path="res://Player.tscn" id="2_bc4qa"]
 [ext_resource type="PackedScene" uid="uid://cn7p0beeqe516" path="res://mob/spawner/mob_spawner_3d.tscn" id="3_gmctb"]
 [ext_resource type="Script" uid="uid://dhkhjul6s04rb" path="res://level/home_ui.gd" id="5_q5axl"]
-[ext_resource type="Script" uid="uid://ck72w8b6yjqp8" path="res://level/mobile_ui.gd" id="6_c45uj"]
-[ext_resource type="Script" uid="uid://cnuus1fcr31su" path="res://level/joystick.gd" id="6_dtcd1"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_uvm4r"]
 
@@ -156,7 +154,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9672756, 1.3864846, 26.4768
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9244709, 1.4261814, 3.1128273)
 
 [node name="MobileUI" type="CanvasLayer" parent="." unique_id=171420471]
-script = ExtResource("6_c45uj")
+visible = false
 
 [node name="Joystick" type="Control" parent="MobileUI" unique_id=1009731536]
 layout_mode = 3
@@ -168,7 +166,6 @@ offset_top = -143.0
 offset_right = 131.0
 offset_bottom = -103.0
 grow_vertical = 0
-script = ExtResource("6_dtcd1")
 
 [node name="ShootButton" type="Button" parent="MobileUI" unique_id=392589512]
 offset_right = 8.0
