@@ -1,0 +1,231 @@
+[gd_scene format=3 uid="uid://dp7sxe5xl5shk"]
+
+[ext_resource type="Texture2D" uid="uid://yw4tddvauf1p" path="res://level/checkboard.png" id="1_cig4d"]
+[ext_resource type="Script" uid="uid://o36wkvu8fbk8" path="res://level/temporary_level.gd" id="1_vca4y"]
+[ext_resource type="PackedScene" uid="uid://obox1utpmqjq" path="res://Player.tscn" id="2_bc4qa"]
+[ext_resource type="PackedScene" uid="uid://cn7p0beeqe516" path="res://mob/spawner/mob_spawner_3d.tscn" id="3_gmctb"]
+[ext_resource type="Script" uid="uid://dhkhjul6s04rb" path="res://level/home_ui.gd" id="5_q5axl"]
+[ext_resource type="Script" uid="uid://ck72w8b6yjqp8" path="res://level/mobile_ui.gd" id="6_c45uj"]
+[ext_resource type="Script" uid="uid://cnuus1fcr31su" path="res://level/joystick.gd" id="6_dtcd1"]
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_uvm4r"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_uvm4r"]
+font_size = 60
+shadow_size = 8
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Environment" id="Environment_pev5d"]
+background_mode = 1
+background_color = Color(0, 0.807843, 1, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.815625, 0.702063, 0.54125, 1)
+ambient_light_sky_contribution = 0.31
+tonemap_mode = 2
+tonemap_exposure = 1.05
+tonemap_white = 0.95
+ssao_intensity = 1.0
+glow_normalized = true
+glow_intensity = 0.2
+fog_enabled = true
+fog_light_color = Color(0, 0.478431, 0.764706, 1)
+fog_density = 0.002
+fog_height = 0.52
+fog_height_density = 0.1319
+volumetric_fog_density = 0.1525
+volumetric_fog_albedo = Color(0.203922, 0.203922, 1, 1)
+volumetric_fog_emission = Color(0.0431373, 0.0431373, 0.0431373, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ooyhk"]
+albedo_color = Color(1, 0.717647, 0.188235, 1)
+albedo_texture = ExtResource("1_cig4d")
+uv1_triplanar = true
+uv1_triplanar_sharpness = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pixig"]
+albedo_color = Color(0.286275, 0.682353, 0.427451, 1)
+albedo_texture = ExtResource("1_cig4d")
+uv1_triplanar = true
+uv1_triplanar_sharpness = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7l0sc"]
+albedo_color = Color(0.286275, 0.682353, 0.427451, 1)
+albedo_texture = ExtResource("1_cig4d")
+uv1_triplanar = true
+uv1_triplanar_sharpness = 4.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_3f7wr"]
+font_size = 100
+font_color = Color(0.99116415, 0.99116427, 0.99116415, 1)
+outline_size = 15
+outline_color = Color(0.011087579, 0.011087578, 0.01108758, 1)
+
+[node name="TemporaryLevel" type="Node3D" unique_id=1990066259]
+script = ExtResource("1_vca4y")
+
+[node name="KillPlane" type="Area3D" parent="." unique_id=58111275]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.112392426, 26.479008)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="KillPlane" unique_id=1323562222]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.173962, 0)
+shape = SubResource("WorldBoundaryShape3D_uvm4r")
+
+[node name="MobSpawner3D" parent="." unique_id=271100840 instance=ExtResource("3_gmctb")]
+transform = Transform3D(-4.371139e-08, 0, 0.99999994, 0, 0.99999994, 0, -1, 0, -4.3711385e-08, -32.158768, 0.88203585, 25.280779)
+
+[node name="Label" type="Label" parent="MobSpawner3D" unique_id=607382920]
+offset_left = 90.0
+offset_top = 68.0
+offset_right = 332.0
+offset_bottom = 151.0
+text = "Score : 0"
+label_settings = SubResource("LabelSettings_uvm4r")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=517525407]
+environment = SubResource("Environment_pev5d")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1983773634]
+transform = Transform3D(0.707107, -0.612373, 0.353553, 0, 0.5, 0.866026, -0.707107, -0.612373, 0.353553, 0, 10, 0)
+shadow_enabled = true
+directional_shadow_max_distance = 40.0
+
+[node name="Bridge2" type="CSGBox3D" parent="." unique_id=1914156870]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10.5)
+use_collision = true
+size = Vector3(4, 1, 3)
+material = SubResource("StandardMaterial3D_ooyhk")
+
+[node name="Bridge5" type="CSGBox3D" parent="." unique_id=1590498086]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 14.5)
+use_collision = true
+size = Vector3(4, 1, 3)
+material = SubResource("StandardMaterial3D_ooyhk")
+
+[node name="Bridge6" type="CSGBox3D" parent="." unique_id=766509143]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 18.5)
+use_collision = true
+size = Vector3(4, 1, 3)
+material = SubResource("StandardMaterial3D_ooyhk")
+
+[node name="Platform6" type="CSGBox3D" parent="." unique_id=980842127]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 0)
+use_collision = true
+size = Vector3(17, 11, 15)
+material = SubResource("StandardMaterial3D_pixig")
+
+[node name="Platform7" type="CSGBox3D" parent="." unique_id=1243847483]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 26)
+use_collision = true
+size = Vector3(9, 11, 9)
+material = SubResource("StandardMaterial3D_7l0sc")
+
+[node name="Bridge3" type="CSGBox3D" parent="." unique_id=1467384163]
+transform = Transform3D(0.02872711, 0, 0.9995873, 0, 1, 0, -0.9995873, 0, 0.02872711, -24.486506, 0, 25.341125)
+use_collision = true
+size = Vector3(4, 1, 3)
+material = SubResource("StandardMaterial3D_ooyhk")
+
+[node name="Bridge7" type="CSGBox3D" parent="." unique_id=1081756264]
+transform = Transform3D(0.02872711, 0, 0.9995873, 0, 1, 0, -0.9995873, 0, 0.02872711, -20.488153, 0, 25.456034)
+use_collision = true
+size = Vector3(4, 1, 3)
+material = SubResource("StandardMaterial3D_ooyhk")
+
+[node name="Bridge8" type="CSGBox3D" parent="." unique_id=2106539461]
+transform = Transform3D(0.02872711, 0, 0.9995873, 0, 1, 0, -0.9995873, 0, 0.02872711, -16.489805, 0, 25.570942)
+use_collision = true
+size = Vector3(4, 1, 3)
+material = SubResource("StandardMaterial3D_ooyhk")
+
+[node name="Platform8" type="CSGBox3D" parent="." unique_id=1014797172]
+transform = Transform3D(0.02872711, 0, 0.9995873, 0, 1, 0, -0.9995873, 0, 0.02872711, -34.98217, -5, 25.03949)
+use_collision = true
+size = Vector3(17, 11, 15)
+material = SubResource("StandardMaterial3D_pixig")
+
+[node name="Platform9" type="CSGBox3D" parent="." unique_id=158777759]
+transform = Transform3D(0.02872711, 0, 0.9995873, 0, 1, 0, -0.9995873, 0, 0.02872711, -8.857877, -5, 25.786396)
+use_collision = true
+size = Vector3(9, 11, 9)
+material = SubResource("StandardMaterial3D_7l0sc")
+
+[node name="Player" parent="." unique_id=1291102696 instance=ExtResource("2_bc4qa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9672756, 1.3864846, 26.476885)
+
+[node name="MobSpawner3D2" parent="." unique_id=1966699453 instance=ExtResource("3_gmctb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9244709, 1.4261814, 3.1128273)
+
+[node name="MobileUI" type="CanvasLayer" parent="." unique_id=171420471]
+script = ExtResource("6_c45uj")
+
+[node name="Joystick" type="Control" parent="MobileUI" unique_id=1009731536]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 91.0
+offset_top = -143.0
+offset_right = 131.0
+offset_bottom = -103.0
+grow_vertical = 0
+script = ExtResource("6_dtcd1")
+
+[node name="ShootButton" type="Button" parent="MobileUI" unique_id=392589512]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="HomeUI" type="CanvasLayer" parent="." unique_id=1489525138]
+script = ExtResource("5_q5axl")
+
+[node name="HomePanel" type="Control" parent="HomeUI" unique_id=1318072468]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackGround" type="ColorRect" parent="HomeUI/HomePanel" unique_id=2043021106]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.42365062, 0.42365065, 0.42365062, 1)
+
+[node name="PlayButton" type="Button" parent="HomeUI/HomePanel" unique_id=607040660]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -250.0
+offset_top = -337.0
+offset_right = 311.0
+offset_bottom = -95.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 100
+text = "Play "
+
+[node name="Label" type="Label" parent="HomeUI/HomePanel" unique_id=554292434]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -750.0
+offset_top = 80.0
+offset_right = 872.0
+offset_bottom = 357.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+text = "SKY ADVENTURE
+Explore • Survive "
+label_settings = SubResource("LabelSettings_3f7wr")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="body_entered" from="KillPlane" to="." method="_on_kill_plane_body_entered"]
+[connection signal="mob_spawned" from="MobSpawner3D" to="." method="_on_mob_spawner_3d_mob_spawned"]

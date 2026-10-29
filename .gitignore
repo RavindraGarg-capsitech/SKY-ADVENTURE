@@ -1,0 +1,56 @@
+# ── Godot ──────────────────────────────────────────────────────────────────
+.godot/
+
+# ── Node.js / Firebase ──────────────────────────────────────────────────────
+node_modules/
+dist/
+lib/
+*.js.map
+.npm/
+
+# ── Environment & Secrets ───────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+service-account.json
+*.pem
+*.key
+
+# ── Firebase ────────────────────────────────────────────────────────────────
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+database-debug.log
+pubsub-debug.log
+
+# ── OS ──────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ─────────────────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.suo
+*.user
+*.uid
+
+
+# Godot Android build files
+/android/build/
+*.aar
+
+analysis_resultsss.md
+tomm.txt
+
+*.apk
+*.zip
+
+# Generated Android build files
+/android/build/
+*.aar
+
+# Temporary files
+*.tmp
+*.apk.idsig
