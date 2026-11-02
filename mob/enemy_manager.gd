@@ -18,6 +18,8 @@ var is_spawning: bool = false
 
 
 func _ready() -> void:
+	if not is_in_group("enemy_manager"):
+		add_to_group("enemy_manager")
 	refresh_spawners()
 
 
@@ -83,7 +85,12 @@ func _on_enemy_died(mob: Node3D) -> void:
 		return
 
 	active_enemies.erase(mob)
-	var death_pos: Vector3 = mob.global_position if is_instance_valid(mob) else Vector3.ZERO
+	var death_pos: Vector3 = Vector3.ZERO
+	if is_instance_valid(mob):
+		if "death_position_recorded" in mob and mob.death_position_recorded != Vector3.ZERO:
+			death_pos = mob.death_position_recorded
+		else:
+			death_pos = mob.global_position
 	enemy_died.emit(mob, death_pos)
 	remaining_enemies_changed.emit(get_remaining_count())
 
@@ -94,6 +101,11 @@ func _on_enemy_died(mob: Node3D) -> void:
 
 func get_remaining_count() -> int:
 	return spawn_queue.size() + active_enemies.size()
+
+
+func stop_spawning() -> void:
+	is_spawning = false
+	spawn_queue.clear()
 
 
 func clear_all() -> void:

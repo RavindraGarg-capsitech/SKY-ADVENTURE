@@ -53,6 +53,8 @@ func _physics_process(delta: float) -> void:
 func _fire_energy_barrage() -> void:
 	if projectile_scene == null or not is_instance_valid(player):
 		return
+	if "is_dead" in player and player.is_dead:
+		return
 
 	var origin: Vector3 = global_position + Vector3.UP * 0.5
 	var target: Vector3 = player.global_position + Vector3.UP * 1.0

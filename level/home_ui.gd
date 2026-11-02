@@ -7,19 +7,24 @@ extends CanvasLayer
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	home_panel.show()
-
 	play_button.pressed.connect(_on_play_pressed)
 
 	if get_node_or_null("/root/GameManager") != null:
 		GameManager.game_state_changed.connect(_on_game_state_changed)
-		GameManager.change_state(GameManager.GameState.HOME)
+		if GameManager.current_state == GameManager.GameState.PLAYING:
+			home_panel.hide()
+		else:
+			home_panel.show()
+			GameManager.change_state(GameManager.GameState.HOME)
 	else:
+		home_panel.show()
 		get_tree().paused = true
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 
 func _on_play_pressed() -> void:
+	if get_node_or_null("/root/AudioManager") != null:
+		AudioManager.play_click_sound()
 	home_panel.hide()
 
 	if get_node_or_null("/root/GameManager") != null:

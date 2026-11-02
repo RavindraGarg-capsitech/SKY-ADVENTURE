@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "mat_cliff"
+albedo_color = Color(0.48, 0.42, 0.36, 1)
+roughness = 0.95
+metallic = 0.05
+diffuse_mode = 1
+specular_mode = 2

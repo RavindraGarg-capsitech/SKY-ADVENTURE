@@ -40,6 +40,8 @@ func _physics_process(delta: float) -> void:
 func _shoot_projectile() -> void:
 	if projectile_scene == null or not is_instance_valid(player):
 		return
+	if "is_dead" in player and player.is_dead:
+		return
 
 	var proj = projectile_scene.instantiate() as Node3D
 	get_tree().current_scene.add_child(proj)

@@ -22,15 +22,21 @@ outline_size = 4
 outline_color = Color(0, 0, 0, 0.9)
 
 [sub_resource type="LabelSettings" id="LabelSettings_wave"]
-font_size = 26
+font_size = 24
 font_color = Color(1, 0.84, 0.2, 1)
 outline_size = 6
 outline_color = Color(0, 0, 0, 0.9)
 
-[sub_resource type="LabelSettings" id="LabelSettings_enemies"]
+[sub_resource type="LabelSettings" id="LabelSettings_info"]
 font_size = 20
-font_color = Color(0.9, 0.9, 0.9, 1)
+font_color = Color(0.92, 0.92, 0.92, 1)
 outline_size = 4
+outline_color = Color(0, 0, 0, 0.9)
+
+[sub_resource type="LabelSettings" id="LabelSettings_score"]
+font_size = 22
+font_color = Color(0.4, 0.85, 1, 1)
+outline_size = 5
 outline_color = Color(0, 0, 0, 0.9)
 
 [sub_resource type="LabelSettings" id="LabelSettings_banner_title"]
@@ -45,6 +51,18 @@ font_color = Color(1, 1, 1, 1)
 outline_size = 6
 outline_color = Color(0.1, 0.1, 0.1, 0.9)
 
+[sub_resource type="LabelSettings" id="LabelSettings_countdown_title"]
+font_size = 38
+font_color = Color(0.4, 0.85, 1, 1)
+outline_size = 8
+outline_color = Color(0.05, 0.05, 0.05, 0.95)
+
+[sub_resource type="LabelSettings" id="LabelSettings_countdown_sub"]
+font_size = 28
+font_color = Color(1, 0.9, 0.2, 1)
+outline_size = 6
+outline_color = Color(0, 0, 0, 0.95)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_boss_fill"]
 bg_color = Color(0.85, 0.15, 0.2, 1)
 corner_radius_top_left = 6
@@ -58,16 +76,22 @@ font_color = Color(1, 0.3, 0.3, 1)
 outline_size = 6
 outline_color = Color(0, 0, 0, 0.95)
 
+[sub_resource type="LabelSettings" id="LabelSettings_heal"]
+font_size = 20
+font_color = Color(0.2, 1, 0.4, 1)
+outline_size = 5
+outline_color = Color(0, 0, 0, 0.95)
+
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud01")
 
 [node name="HealthContainer" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
-offset_left = 50.0
-offset_top = 50.0
-offset_right = 410.0
-offset_bottom = 90.0
+offset_left = 40.0
+offset_top = 40.0
+offset_right = 380.0
+offset_bottom = 80.0
 
 [node name="HealthBar" type="ProgressBar" parent="HealthContainer"]
 layout_mode = 1
@@ -93,41 +117,57 @@ label_settings = SubResource("LabelSettings_health")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="WaveContainer" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -320.0
-offset_top = 50.0
-offset_right = -50.0
-offset_bottom = 120.0
-grow_horizontal = 0
-
-[node name="WaveLabel" type="Label" parent="WaveContainer"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 35.0
-grow_horizontal = 2
-text = "Wave: 1"
-label_settings = SubResource("LabelSettings_wave")
-horizontal_alignment = 2
-
-[node name="EnemiesLabel" type="Label" parent="WaveContainer"]
+[node name="HealNotification" type="Label" parent="HealthContainer"]
+visible = false
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -30.0
+offset_top = 6.0
+offset_bottom = 36.0
 grow_horizontal = 2
 grow_vertical = 0
-text = "Enemies Remaining: 0"
-label_settings = SubResource("LabelSettings_enemies")
+text = "+25 HP Recovered!"
+label_settings = SubResource("LabelSettings_heal")
+
+[node name="WaveContainer" type="VBoxContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -340.0
+offset_top = 40.0
+offset_right = -40.0
+offset_bottom = 180.0
+grow_horizontal = 0
+theme_override_constants/separation = 4
+alignment = 0
+
+[node name="WaveLabel" type="Label" parent="WaveContainer"]
+layout_mode = 2
+text = "Wave: 1"
+label_settings = SubResource("LabelSettings_wave")
 horizontal_alignment = 2
 
-[node name="TransitionContainer" type="Control" parent="."]
+[node name="EnemiesLabel" type="Label" parent="WaveContainer"]
+layout_mode = 2
+text = "Enemies: 0"
+label_settings = SubResource("LabelSettings_info")
+horizontal_alignment = 2
+
+[node name="CoinsLabel" type="Label" parent="WaveContainer"]
+layout_mode = 2
+text = "Coins: 0"
+label_settings = SubResource("LabelSettings_info")
+horizontal_alignment = 2
+
+[node name="ScoreLabel" type="Label" parent="WaveContainer"]
+layout_mode = 2
+text = "Score: 0"
+label_settings = SubResource("LabelSettings_score")
+horizontal_alignment = 2
+
+[node name="WaveClearedContainer" type="Control" parent="."]
 visible = false
 layout_mode = 3
 anchors_preset = 8
@@ -136,24 +176,24 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -350.0
-offset_top = -100.0
+offset_top = -90.0
 offset_right = 350.0
-offset_bottom = 60.0
+offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Title" type="Label" parent="TransitionContainer"]
+[node name="Title" type="Label" parent="WaveClearedContainer"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 60.0
+offset_bottom = 65.0
 grow_horizontal = 2
-text = "WAVE CLEARED!"
+text = "WAVE 1 CLEARED!"
 label_settings = SubResource("LabelSettings_banner_title")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SubTitle" type="Label" parent="TransitionContainer"]
+[node name="SubTitle" type="Label" parent="WaveClearedContainer"]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -162,8 +202,48 @@ anchor_bottom = 1.0
 offset_top = -45.0
 grow_horizontal = 2
 grow_vertical = 0
-text = "Next wave in 3.0s"
+text = "Sector Secured"
 label_settings = SubResource("LabelSettings_banner_sub")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CountdownContainer" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -90.0
+offset_right = 350.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="CountdownContainer"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 55.0
+grow_horizontal = 2
+text = "GET READY!"
+label_settings = SubResource("LabelSettings_countdown_title")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SubTitle" type="Label" parent="CountdownContainer"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -50.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Next wave in 3.0s"
+label_settings = SubResource("LabelSettings_countdown_sub")
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -174,9 +254,9 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -300.0
-offset_top = 45.0
+offset_top = 40.0
 offset_right = 300.0
-offset_bottom = 110.0
+offset_bottom = 105.0
 grow_horizontal = 2
 
 [node name="BossNameLabel" type="Label" parent="BossContainer"]

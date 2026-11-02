@@ -19,4 +19,4 @@ shape = SubResource("SphereShape3D_uvm4r")
 [node name="projectile3d" parent="." unique_id=1148811546 instance=ExtResource("1_kixxk")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+

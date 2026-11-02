@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://c7coinpkup9m1"]
+
+[ext_resource type="Script" path="res://reward/coin_pickup.gd" id="1_coin_script"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_pickup_area"]
+radius = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gold_rim"]
+albedo_color = Color(1, 0.82, 0.15, 1)
+metallic = 0.85
+roughness = 0.22
+emission_enabled = true
+emission = Color(1, 0.75, 0.1, 1)
+emission_energy_multiplier = 1.8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_rim"]
+material = SubResource("StandardMaterial3D_gold_rim")
+top_radius = 0.42
+bottom_radius = 0.42
+height = 0.12
+radial_segments = 16
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gold_core"]
+albedo_color = Color(1, 0.9, 0.28, 1)
+metallic = 0.9
+roughness = 0.18
+emission_enabled = true
+emission = Color(1, 0.85, 0.2, 1)
+emission_energy_multiplier = 2.2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_core"]
+material = SubResource("StandardMaterial3D_gold_core")
+top_radius = 0.32
+bottom_radius = 0.32
+height = 0.15
+radial_segments = 16
+
+[sub_resource type="BoxMesh" id="BoxMesh_star"]
+material = SubResource("StandardMaterial3D_gold_core")
+size = Vector3(0.18, 0.18, 0.18)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sparkle"]
+shading_mode = 0
+albedo_color = Color(1, 0.98, 0.7, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_sparkle"]
+material = SubResource("StandardMaterial3D_sparkle")
+size = Vector3(0.08, 0.08, 0.08)
+
+[node name="CoinPickup" type="Area3D" groups=["coins", "pickups"]]
+collision_layer = 16
+collision_mask = 1
+script = ExtResource("1_coin_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_pickup_area")
+
+[node name="CoinVisual" type="Node3D" parent="."]
+
+[node name="OuterRim" type="MeshInstance3D" parent="CoinVisual"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0)
+mesh = SubResource("CylinderMesh_rim")
+
+[node name="InnerCore" type="MeshInstance3D" parent="CoinVisual"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0)
+mesh = SubResource("CylinderMesh_core")
+
+[node name="StarDeco" type="MeshInstance3D" parent="CoinVisual"]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 0, 0, 0)
+mesh = SubResource("BoxMesh_star")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+light_color = Color(1, 0.85, 0.25, 1)
+light_energy = 1.4
+omni_range = 3.5
+
+[node name="Sparkle" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 0.35, 0.1)
+mesh = SubResource("BoxMesh_sparkle")

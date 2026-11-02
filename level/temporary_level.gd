@@ -7,7 +7,10 @@ var player_score: int = 0
 
 
 func _ready() -> void:
+	if label != null:
+		label.visible = false
 	update_score()
+	_ensure_game_over_modal()
 
 	var enemy_mgr: Node = get_node_or_null("EnemyManager")
 	if enemy_mgr != null and enemy_mgr.has_signal("enemy_died"):
@@ -39,7 +42,11 @@ func do_poof(mob_global_position: Vector3) -> void:
 
 
 func update_score() -> void:
-	label.text = "Score: " + str(player_score)
+	if label != null:
+		label.text = "Score: " + str(player_score)
+	var hud = get_tree().get_first_node_in_group("hud")
+	if hud != null and hud.has_method("update_score"):
+		hud.update_score(player_score)
 
 
 func _on_mob_spawner_3d_mob_spawned(mob: Variant) -> void:
@@ -65,3 +72,12 @@ func _on_kill_plane_body_entered(body: Node3D) -> void:
 	if not body.is_in_group("player"):
 		return
 	get_tree().reload_current_scene.call_deferred()
+
+
+func _ensure_game_over_modal() -> void:
+	var gom = get_tree().get_first_node_in_group("game_over_modal")
+	if gom == null:
+		var go_scene = load("res://ui/game_over_modal.tscn")
+		if go_scene != null:
+			var go_inst = go_scene.instantiate()
+			add_child(go_inst)

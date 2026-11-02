@@ -7,6 +7,12 @@ signal player_died
 @export var max_health: int = 100
 @export var current_health: int = 100
 
+@export var bullet_damage: int = 1
+@export var multishot_count: int = 1
+@export var bullet_range: float = 40.0
+@export var shoot_cooldown: float = 0.20
+@export var magnet_radius: float = 4.0
+
 var is_dead: bool = false
 
 const SPEED: float = 5.5
@@ -109,16 +115,59 @@ func _physics_process(delta: float) -> void:
 
 
 func shoot_bullet() -> void:
+	if is_dead:
+		return
 	const BULLET_3D = preload("uid://db2jr0d33yyi6")
 
-	var new_bullet: Node3D = BULLET_3D.instantiate()
-	get_tree().current_scene.add_child(new_bullet)
+	var angles: Array[float] = []
+	match multishot_count:
+		1:
+			angles = [0.0]
+		2:
+			angles = [-0.06, 0.06]
+		3:
+			angles = [-0.10, 0.0, 0.10]
+		4:
+			angles = [-0.14, -0.05, 0.05, 0.14]
+		_:
+			angles = [-0.18, -0.09, 0.0, 0.09, 0.18]
 
-	new_bullet.global_position = %Marker3D.global_position
-	new_bullet.global_basis = %Marker3D.global_basis.orthonormalized()
+	var muzzle_basis: Basis = %Marker3D.global_basis.orthonormalized()
+	var muzzle_pos: Vector3 = %Marker3D.global_position
 
+	for angle in angles:
+		var new_bullet: Node3D = BULLET_3D.instantiate() as Node3D
+		get_tree().current_scene.add_child(new_bullet)
+		new_bullet.global_position = muzzle_pos
+
+		var rotated_basis: Basis = muzzle_basis.rotated(muzzle_basis.y, angle)
+		new_bullet.global_basis = rotated_basis
+
+		if "damage" in new_bullet:
+			new_bullet.damage = bullet_damage
+		if "RANGE" in new_bullet:
+			new_bullet.RANGE = bullet_range
+
+	%Timer.wait_time = shoot_cooldown
 	%Timer.start()
 	%AudioStreamPlayer.play()
+
+
+func apply_upgrade(upgrade_id: String) -> void:
+	match upgrade_id:
+		"rapid_fire":
+			shoot_cooldown = maxf(0.08, shoot_cooldown * 0.8)
+		"multishot":
+			multishot_count = mini(5, multishot_count + 1)
+		"heavy_shot":
+			bullet_damage += 1
+		"increased_range":
+			bullet_range += 15.0
+		"magnetism":
+			magnet_radius += 3.5
+		"health_upgrade":
+			max_health += 25
+			heal(25)
 
 
 func take_damage(amount: int) -> void:
@@ -147,9 +196,35 @@ func die() -> void:
 	is_dead = true
 	velocity = Vector3.ZERO
 	set_physics_process(false)
+	set_process_unhandled_input(false)
+	if has_node("%Timer"):
+		%Timer.stop()
+
 	player_died.emit()
+
+	var rm = get_tree().get_first_node_in_group("reward_manager")
+	var wm = get_tree().get_first_node_in_group("wave_manager")
+	var coins = rm.coins if rm != null and "coins" in rm else 0
+	var wave = wm.current_wave if wm != null and "current_wave" in wm else 1
+	if get_node_or_null("/root/SaveManager") != null:
+		SaveManager.bank_run_results(wave, coins, coins * 10)
+
+	if wm != null and wm.has_method("abort_wave_transition"):
+		wm.abort_wave_transition()
+
+	var modal = get_tree().get_first_node_in_group("upgrade_modal")
+	if modal != null and modal.has_method("hide_modal"):
+		modal.hide_modal()
+
+	var hud = get_tree().get_first_node_in_group("hud")
+	if hud != null and hud.has_method("hide_all_banners"):
+		hud.hide_all_banners()
 
 	if get_node_or_null("/root/GameManager") != null:
 		GameManager.change_state(GameManager.GameState.GAME_OVER)
 	else:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+	var go_modal = get_tree().get_first_node_in_group("game_over_modal")
+	if go_modal != null and go_modal.has_method("show_game_over"):
+		go_modal.show_game_over()

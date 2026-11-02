@@ -23,8 +23,31 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_apply_state_effects(current_state)
 
+	get_tree().node_added.connect(_on_node_added)
+	var player = get_tree().get_first_node_in_group("player")
+	if player != null:
+		_bind_player(player)
+
+
+func _on_node_added(node: Node) -> void:
+	if node.is_in_group("player"):
+		_bind_player(node)
+
+
+func _bind_player(player: Node) -> void:
+	if player.has_signal("player_died"):
+		if not player.player_died.is_connected(_on_player_died):
+			player.player_died.connect(_on_player_died)
+
+
+func _on_player_died() -> void:
+	change_state(GameState.GAME_OVER)
+
 
 func _unhandled_input(event: InputEvent) -> void:
+	if current_state == GameState.GAME_OVER:
+		return
+
 	if event.is_action_pressed("ui_cancel"):
 		if current_state == GameState.PLAYING or current_state == GameState.BOSS_FIGHT:
 			change_state(GameState.PAUSED)
@@ -36,6 +59,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func change_state(new_state: GameState) -> void:
+	# GAME_OVER lock: Once in GAME_OVER, only restart/retry (PLAYING) or main menu (HOME) can leave GAME_OVER
+	if current_state == GameState.GAME_OVER and new_state != GameState.PLAYING and new_state != GameState.HOME:
+		return
+
 	if new_state == current_state and is_inside_tree():
 		_apply_state_effects(new_state)
 		return
@@ -77,12 +104,16 @@ func _apply_state_effects(state: GameState) -> void:
 		GameState.GAME_OVER:
 			get_tree().paused = true
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			var go_modal = get_tree().get_first_node_in_group("game_over_modal")
+			if go_modal != null and go_modal.has_method("show_game_over"):
+				go_modal.show_game_over()
 
 
 func is_playing() -> bool:
-	return current_state == GameState.PLAYING \
+	return (current_state == GameState.PLAYING \
 		or current_state == GameState.BOSS_FIGHT \
-		or current_state == GameState.WAVE_TRANSITION
+		or current_state == GameState.WAVE_TRANSITION) \
+		and current_state != GameState.GAME_OVER
 
 
 func start_game() -> void:

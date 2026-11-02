@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "mat_stone"
+albedo_color = Color(0.62, 0.64, 0.65, 1)
+roughness = 0.9
+metallic = 0.05
+diffuse_mode = 1

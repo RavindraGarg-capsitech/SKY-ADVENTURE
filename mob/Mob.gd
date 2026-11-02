@@ -20,6 +20,7 @@ var attack_timer: float = 0.0
 	$CollisionShape3D/bat_model
 
 var player: Node3D = null
+var death_position_recorded: Vector3 = Vector3.ZERO
 
 @onready var timer: Timer = %Timer
 @onready var ko_sound: AudioStreamPlayer3D = %KOSound
@@ -119,6 +120,7 @@ func play_hurt(amount: int = 1) -> void:
 
 	if health <= 0:
 		is_dead = true
+		death_position_recorded = global_position
 		set_physics_process(false)
 
 		# Allow rotation and gravity for the death effect.

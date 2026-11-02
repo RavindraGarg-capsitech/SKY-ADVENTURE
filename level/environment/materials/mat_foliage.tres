@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "mat_foliage"
+albedo_color = Color(0.2, 0.65, 0.3, 1)
+roughness = 0.8
+metallic = 0.0
+diffuse_mode = 1
+specular_mode = 2

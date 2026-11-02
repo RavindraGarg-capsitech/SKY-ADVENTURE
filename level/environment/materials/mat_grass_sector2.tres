@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "mat_grass_sector2"
+albedo_color = Color(0.18, 0.22, 0.35, 1)
+roughness = 0.85
+metallic = 0.05
+diffuse_mode = 1

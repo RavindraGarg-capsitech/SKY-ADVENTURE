@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://ci7islandbgprop01"]
+
+[ext_resource type="Material" path="res://level/environment/materials/mat_grass.tres" id="1_grass"]
+[ext_resource type="Material" path="res://level/environment/materials/mat_cliff.tres" id="2_cliff"]
+[ext_resource type="Material" path="res://level/environment/materials/mat_waterfall.tres" id="3_water"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_top"]
+material = ExtResource("1_grass")
+top_radius = 16.0
+bottom_radius = 15.0
+height = 3.0
+radial_segments = 8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_underside"]
+material = ExtResource("2_cliff")
+top_radius = 15.0
+bottom_radius = 1.0
+height = 22.0
+radial_segments = 8
+
+[sub_resource type="BoxMesh" id="BoxMesh_water"]
+material = ExtResource("3_water")
+size = Vector3(2.5, 30.0, 0.2)
+
+[node name="PropIslandBackground" type="Node3D"]
+
+[node name="GrassPlateau" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("CylinderMesh_top")
+
+[node name="CliffCone" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -12.5, 0)
+mesh = SubResource("CylinderMesh_underside")
+
+[node name="DistantWaterfall" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.5, -14.0, 0)
+mesh = SubResource("BoxMesh_water")

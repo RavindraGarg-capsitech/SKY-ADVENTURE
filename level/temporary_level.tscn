@@ -1,184 +1,132 @@
 [gd_scene format=3 uid="uid://dp7sxe5xl5shk"]
 
-[ext_resource type="Texture2D" uid="uid://yw4tddvauf1p" path="res://level/checkboard.png" id="1_cig4d"]
 [ext_resource type="Script" uid="uid://o36wkvu8fbk8" path="res://level/temporary_level.gd" id="1_vca4y"]
 [ext_resource type="PackedScene" uid="uid://obox1utpmqjq" path="res://Player.tscn" id="2_bc4qa"]
 [ext_resource type="PackedScene" uid="uid://cn7p0beeqe516" path="res://mob/spawner/mob_spawner_3d.tscn" id="3_gmctb"]
 [ext_resource type="Script" uid="uid://dhkhjul6s04rb" path="res://level/home_ui.gd" id="5_q5axl"]
 [ext_resource type="PackedScene" uid="uid://c6508k0b81h3u" path="res://ui/hud.tscn" id="6_hud01"]
-[ext_resource type="Script" path="res://mob/enemy_manager.gd" id="7_enemymgr"]
-[ext_resource type="Script" path="res://level/wave_manager.gd" id="8_wavemgr"]
+[ext_resource type="Script" uid="uid://b6jgg1i2ntq61" path="res://mob/enemy_manager.gd" id="7_enemymgr"]
+[ext_resource type="Script" uid="uid://drnthosww4mem" path="res://level/wave_manager.gd" id="8_wavemgr"]
+[ext_resource type="Script" uid="uid://bny1sof5rl0x5" path="res://reward/reward_manager.gd" id="9_rewardmgr"]
+[ext_resource type="PackedScene" uid="uid://mm6s7f5ey683" path="res://ui/upgrade_modal.tscn" id="10_upgmodal"]
+[ext_resource type="Script" uid="uid://bsyxxonwea15h" path="res://level/island_manager.gd" id="11_islandmgr"]
+[ext_resource type="Script" uid="uid://cht6c1tp6ki1y" path="res://level/mobile_controls.gd" id="12_mobile"]
+[ext_resource type="PackedScene" uid="uid://dwlvrdky04fgg" path="res://ui/game_over_modal.tscn" id="13_gameover"]
+[ext_resource type="Material" path="res://level/environment/materials/mat_grass.tres" id="14_grass"]
+[ext_resource type="Material" path="res://level/environment/materials/mat_cliff.tres" id="15_cliff"]
+[ext_resource type="Material" path="res://level/environment/materials/mat_stone.tres" id="17_stone"]
+[ext_resource type="Material" path="res://level/environment/materials/mat_gold_rune.tres" id="18_gold"]
+[ext_resource type="Material" path="res://level/environment/materials/mat_grass_sector2.tres" id="19_grass2"]
+[ext_resource type="Material" path="res://level/environment/materials/mat_cliff_sector2.tres" id="20_cliff2"]
+[ext_resource type="PackedScene" uid="uid://dcr217fh6dgq3" path="res://level/environment/props/prop_tree.tscn" id="21_tree"]
+[ext_resource type="PackedScene" uid="uid://fsvjihe0mtyu" path="res://level/environment/props/prop_rock.tscn" id="22_rock"]
+[ext_resource type="PackedScene" uid="uid://bije8c4kv1vg7" path="res://level/environment/props/prop_ancient_pillar.tscn" id="23_pillar"]
+[ext_resource type="PackedScene" uid="uid://bdew1h2wkeyiq" path="res://level/environment/props/prop_spawner_altar.tscn" id="24_altar"]
+[ext_resource type="PackedScene" uid="uid://c4d1csphy2ss3" path="res://level/environment/props/prop_crystal_cluster.tscn" id="25_crystal"]
+[ext_resource type="PackedScene" uid="uid://dbr18t31rr2sy" path="res://level/environment/props/prop_cloud_cluster.tscn" id="26_cloud"]
+[ext_resource type="PackedScene" uid="uid://cl3lrhtftdx7e" path="res://level/environment/props/prop_waterfall.tscn" id="27_waterfall"]
+[ext_resource type="PackedScene" uid="uid://bo88i2iicoa8w" path="res://level/environment/props/prop_island_background.tscn" id="28_islandbg"]
+[ext_resource type="PackedScene" uid="uid://8a45r08wiyqi" path="res://level/environment/props/prop_bridge_wood.tscn" id="29_bridgewood"]
+[ext_resource type="PackedScene" uid="uid://c7coinpkup9m1" path="res://reward/coin_pickup.tscn" id="30_coin"]
 
-[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_uvm4r"]
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_adventure"]
+sky_top_color = Color(0.2, 0.52, 0.88, 1)
+sky_horizon_color = Color(0.72, 0.84, 0.98, 1)
+sky_curve = 0.14
+ground_bottom_color = Color(0.18, 0.28, 0.44, 1)
+ground_horizon_color = Color(0.72, 0.84, 0.98, 1)
+ground_curve = 0.08
+sun_angle_max = 35.0
 
-[sub_resource type="LabelSettings" id="LabelSettings_uvm4r"]
+[sub_resource type="Sky" id="Sky_procedural"]
+sky_material = SubResource("ProceduralSkyMaterial_adventure")
+
+[sub_resource type="Environment" id="Environment_sky_adventure"]
+background_mode = 2
+sky = SubResource("Sky_procedural")
+ambient_light_source = 3
+ambient_light_color = Color(0.88, 0.9, 0.98, 1)
+ambient_light_sky_contribution = 0.65
+tonemap_mode = 2
+tonemap_exposure = 1.05
+ssao_enabled = true
+glow_enabled = true
+glow_normalized = true
+glow_intensity = 0.2
+fog_enabled = true
+fog_light_color = Color(0.68, 0.82, 0.96, 1)
+fog_density = 0.002
+fog_sky_affect = 0.4
+fog_height = -5.0
+fog_height_density = 0.05
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_killplane"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_legacy"]
 font_size = 60
 shadow_size = 8
 shadow_color = Color(0, 0, 0, 1)
 
-[sub_resource type="Environment" id="Environment_pev5d"]
-background_mode = 1
-background_color = Color(0, 0.807843, 1, 1)
-ambient_light_source = 2
-ambient_light_color = Color(0.815625, 0.702063, 0.54125, 1)
-ambient_light_sky_contribution = 0.31
-tonemap_mode = 2
-tonemap_exposure = 1.05
-tonemap_white = 0.95
-ssao_intensity = 1.0
-glow_normalized = true
-glow_intensity = 0.2
-fog_enabled = true
-fog_light_color = Color(0, 0.478431, 0.764706, 1)
-fog_density = 0.002
-fog_height = 0.52
-fog_height_density = 0.1319
-volumetric_fog_density = 0.1525
-volumetric_fog_albedo = Color(0.203922, 0.203922, 1, 1)
-volumetric_fog_emission = Color(0.0431373, 0.0431373, 0.0431373, 1)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ooyhk"]
-albedo_color = Color(1, 0.717647, 0.188235, 1)
-albedo_texture = ExtResource("1_cig4d")
-uv1_triplanar = true
-uv1_triplanar_sharpness = 4.0
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pixig"]
-albedo_color = Color(0.286275, 0.682353, 0.427451, 1)
-albedo_texture = ExtResource("1_cig4d")
-uv1_triplanar = true
-uv1_triplanar_sharpness = 4.0
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7l0sc"]
-albedo_color = Color(0.286275, 0.682353, 0.427451, 1)
-albedo_texture = ExtResource("1_cig4d")
-uv1_triplanar = true
-uv1_triplanar_sharpness = 4.0
-
-[sub_resource type="LabelSettings" id="LabelSettings_3f7wr"]
-font_size = 100
-font_color = Color(0.99116415, 0.99116427, 0.99116415, 1)
-outline_size = 15
-outline_color = Color(0.011087579, 0.011087578, 0.01108758, 1)
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font_size = 96
+font_color = Color(0.99, 0.99, 0.99, 1)
+outline_size = 14
+outline_color = Color(0.02, 0.02, 0.02, 1)
 
 [node name="TemporaryLevel" type="Node3D" unique_id=1990066259]
 script = ExtResource("1_vca4y")
 
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=517525407]
+environment = SubResource("Environment_sky_adventure")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1983773634]
+transform = Transform3D(0.707107, -0.612373, 0.353553, 0, 0.5, 0.866026, -0.707107, -0.612373, 0.353553, 0, 20, 0)
+light_color = Color(1, 0.96, 0.88, 1)
+light_energy = 1.2
+shadow_enabled = true
+directional_shadow_max_distance = 80.0
+
 [node name="KillPlane" type="Area3D" parent="." unique_id=58111275]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.112392426, 26.479008)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -14, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="KillPlane" unique_id=1323562222]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.173962, 0)
-shape = SubResource("WorldBoundaryShape3D_uvm4r")
+shape = SubResource("WorldBoundaryShape3D_killplane")
 
 [node name="MobSpawner3D" parent="." unique_id=271100840 instance=ExtResource("3_gmctb")]
 transform = Transform3D(-4.371139e-08, 0, 0.99999994, 0, 0.99999994, 0, -1, 0, -4.3711385e-08, -32.158768, 0.88203585, 25.280779)
 
 [node name="Label" type="Label" parent="MobSpawner3D" unique_id=607382920]
+visible = false
 offset_left = 90.0
 offset_top = 68.0
 offset_right = 332.0
 offset_bottom = 151.0
 text = "Score : 0"
-label_settings = SubResource("LabelSettings_uvm4r")
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=517525407]
-environment = SubResource("Environment_pev5d")
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1983773634]
-transform = Transform3D(0.707107, -0.612373, 0.353553, 0, 0.5, 0.866026, -0.707107, -0.612373, 0.353553, 0, 10, 0)
-shadow_enabled = true
-directional_shadow_max_distance = 40.0
-
-[node name="Bridge2" type="CSGBox3D" parent="." unique_id=1914156870]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10.5)
-use_collision = true
-size = Vector3(4, 1, 3)
-material = SubResource("StandardMaterial3D_ooyhk")
-
-[node name="Bridge5" type="CSGBox3D" parent="." unique_id=1590498086]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 14.5)
-use_collision = true
-size = Vector3(4, 1, 3)
-material = SubResource("StandardMaterial3D_ooyhk")
-
-[node name="Bridge6" type="CSGBox3D" parent="." unique_id=766509143]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 18.5)
-use_collision = true
-size = Vector3(4, 1, 3)
-material = SubResource("StandardMaterial3D_ooyhk")
-
-[node name="Platform6" type="CSGBox3D" parent="." unique_id=980842127]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 0)
-use_collision = true
-size = Vector3(17, 11, 15)
-material = SubResource("StandardMaterial3D_pixig")
-
-[node name="Platform7" type="CSGBox3D" parent="." unique_id=1243847483]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 26)
-use_collision = true
-size = Vector3(9, 11, 9)
-material = SubResource("StandardMaterial3D_7l0sc")
-
-[node name="Bridge3" type="CSGBox3D" parent="." unique_id=1467384163]
-transform = Transform3D(0.02872711, 0, 0.9995873, 0, 1, 0, -0.9995873, 0, 0.02872711, -24.486506, 0, 25.341125)
-use_collision = true
-size = Vector3(4, 1, 3)
-material = SubResource("StandardMaterial3D_ooyhk")
-
-[node name="Bridge7" type="CSGBox3D" parent="." unique_id=1081756264]
-transform = Transform3D(0.02872711, 0, 0.9995873, 0, 1, 0, -0.9995873, 0, 0.02872711, -20.488153, 0, 25.456034)
-use_collision = true
-size = Vector3(4, 1, 3)
-material = SubResource("StandardMaterial3D_ooyhk")
-
-[node name="Bridge8" type="CSGBox3D" parent="." unique_id=2106539461]
-transform = Transform3D(0.02872711, 0, 0.9995873, 0, 1, 0, -0.9995873, 0, 0.02872711, -16.489805, 0, 25.570942)
-use_collision = true
-size = Vector3(4, 1, 3)
-material = SubResource("StandardMaterial3D_ooyhk")
-
-[node name="Platform8" type="CSGBox3D" parent="." unique_id=1014797172]
-transform = Transform3D(0.02872711, 0, 0.9995873, 0, 1, 0, -0.9995873, 0, 0.02872711, -34.98217, -5, 25.03949)
-use_collision = true
-size = Vector3(17, 11, 15)
-material = SubResource("StandardMaterial3D_pixig")
-
-[node name="Platform9" type="CSGBox3D" parent="." unique_id=158777759]
-transform = Transform3D(0.02872711, 0, 0.9995873, 0, 1, 0, -0.9995873, 0, 0.02872711, -8.857877, -5, 25.786396)
-use_collision = true
-size = Vector3(9, 11, 9)
-material = SubResource("StandardMaterial3D_7l0sc")
-
-[node name="Player" parent="." unique_id=1291102696 instance=ExtResource("2_bc4qa")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9672756, 1.3864846, 26.476885)
+label_settings = SubResource("LabelSettings_legacy")
 
 [node name="MobSpawner3D2" parent="." unique_id=1966699453 instance=ExtResource("3_gmctb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9244709, 1.4261814, 3.1128273)
 
-[node name="MobileUI" type="CanvasLayer" parent="." unique_id=171420471]
-visible = false
-
-[node name="Joystick" type="Control" parent="MobileUI" unique_id=1009731536]
-layout_mode = 3
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 91.0
-offset_top = -143.0
-offset_right = 131.0
-offset_bottom = -103.0
-grow_vertical = 0
-
-[node name="ShootButton" type="Button" parent="MobileUI" unique_id=392589512]
-offset_right = 8.0
-offset_bottom = 8.0
+[node name="Player" parent="." unique_id=1291102696 instance=ExtResource("2_bc4qa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9672756, 1.3864846, 26.476885)
 
 [node name="EnemyManager" type="Node3D" parent="." unique_id=312458901]
 script = ExtResource("7_enemymgr")
 
 [node name="WaveManager" type="Node3D" parent="." unique_id=412458902]
 script = ExtResource("8_wavemgr")
+
+[node name="RewardManager" type="Node" parent="." unique_id=512458903]
+script = ExtResource("9_rewardmgr")
+
+[node name="IslandManager" type="Node3D" parent="." unique_id=612458904 node_paths=PackedStringArray("bridge_sector_2", "moving_platform")]
+script = ExtResource("11_islandmgr")
+bridge_sector_2 = NodePath("../BridgeSector2")
+moving_platform = NodePath("../MovingPlatform1")
+
+[node name="UpgradeModal" parent="." unique_id=712458905 instance=ExtResource("10_upgmodal")]
+
+[node name="GameOverModal" parent="." unique_id=812458906 instance=ExtResource("13_gameover")]
 
 [node name="HUD" parent="." unique_id=741029851 instance=ExtResource("6_hud01")]
 
@@ -200,7 +148,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.42365062, 0.42365065, 0.42365062, 1)
+color = Color(0.12, 0.16, 0.24, 0.88)
 
 [node name="PlayButton" type="Button" parent="HomeUI/HomePanel" unique_id=607040660]
 layout_mode = 1
@@ -209,14 +157,14 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -250.0
-offset_top = -337.0
-offset_right = 311.0
-offset_bottom = -95.0
+offset_left = -260.0
+offset_top = -320.0
+offset_right = 260.0
+offset_bottom = -120.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_font_sizes/font_size = 100
-text = "Play "
+theme_override_font_sizes/font_size = 80
+text = "START EXPEDITION"
 
 [node name="Label" type="Label" parent="HomeUI/HomePanel" unique_id=554292434]
 layout_mode = 1
@@ -225,15 +173,347 @@ anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -750.0
 offset_top = 80.0
-offset_right = 872.0
-offset_bottom = 357.0
+offset_right = 750.0
+offset_bottom = 340.0
 grow_horizontal = 2
-size_flags_horizontal = 4
 text = "SKY ADVENTURE
-Explore • Survive "
-label_settings = SubResource("LabelSettings_3f7wr")
+Floating Islands Survival"
+label_settings = SubResource("LabelSettings_title")
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="MobileUI" type="CanvasLayer" parent="." unique_id=171420471]
+script = ExtResource("12_mobile")
+
+[node name="Joystick" type="Control" parent="MobileUI" unique_id=1009731536]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_top = -240.0
+offset_right = 240.0
+offset_bottom = -80.0
+grow_vertical = 0
+
+[node name="ShootButton" type="Button" parent="MobileUI" unique_id=392589512]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_top = -220.0
+offset_right = -100.0
+offset_bottom = -100.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 28
+text = "FIRE"
+
+[node name="JumpButton" type="Button" parent="MobileUI" unique_id=392589513]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -340.0
+offset_top = -180.0
+offset_right = -240.0
+offset_bottom = -80.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "JUMP"
+
+[node name="StartIsland_Grass" type="CSGCylinder3D" parent="." unique_id=385050182]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 26)
+use_collision = true
+radius = 8.0
+height = 1.0
+sides = 12
+material = ExtResource("14_grass")
+
+[node name="StartIsland_Cliff" type="CSGCylinder3D" parent="StartIsland_Grass" unique_id=1646923907]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5.5, 0)
+use_collision = true
+radius = 7.5
+height = 10.0
+sides = 10
+cone = true
+material = ExtResource("15_cliff")
+
+[node name="StartIsland_Path" type="CSGBox3D" parent="StartIsland_Grass" unique_id=1202821147]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+use_collision = true
+size = Vector3(3.5, 1, 12)
+material = ExtResource("17_stone")
+
+[node name="StartTree1" parent="StartIsland_Grass" unique_id=257608745 instance=ExtResource("21_tree")]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, -5.2, 0.5, -3.2)
+
+[node name="StartTree2" parent="StartIsland_Grass" unique_id=185687510 instance=ExtResource("21_tree")]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, -5.8, 0.5, 3.5)
+
+[node name="StartTree3" parent="StartIsland_Grass" unique_id=1991047114 instance=ExtResource("21_tree")]
+transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, 5.5, 0.5, -4)
+
+[node name="StartRock1" parent="StartIsland_Grass" unique_id=1822456177 instance=ExtResource("22_rock")]
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 5.8, 0.5, 2.5)
+
+[node name="StartRock2" parent="StartIsland_Grass" unique_id=1696936428 instance=ExtResource("22_rock")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, -4.2, 0.5, 5)
+
+[node name="StartWaterfall" parent="StartIsland_Grass" unique_id=1753271198 instance=ExtResource("27_waterfall")]
+transform = Transform3D(0.85, 0, 0.52, 0, 1, 0, -0.52, 0, 0.85, 7.6, 0.4, 1.2)
+
+[node name="SkyBridge_Seg1" parent="." unique_id=1081366389 instance=ExtResource("29_bridgewood")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 18.5)
+
+[node name="SkyBridge_Seg2" parent="." unique_id=107609932 instance=ExtResource("29_bridgewood")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 14.5)
+
+[node name="SkyBridge_Seg3" parent="." unique_id=1004333649 instance=ExtResource("29_bridgewood")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 10.5)
+
+[node name="ArenaIsland_Grass" type="CSGBox3D" parent="." unique_id=1908466714]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28, 0, 25.5)
+use_collision = true
+size = Vector3(22, 1, 18)
+material = ExtResource("14_grass")
+
+[node name="ArenaIsland_Cliff" type="CSGBox3D" parent="ArenaIsland_Grass" unique_id=1407350185]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5.5, 0)
+use_collision = true
+size = Vector3(20, 10, 16)
+material = ExtResource("15_cliff")
+
+[node name="Arena_Ring1" type="CSGCylinder3D" parent="ArenaIsland_Grass" unique_id=254741688]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.05, 0)
+use_collision = true
+radius = 6.5
+height = 1.0
+sides = 12
+material = ExtResource("17_stone")
+
+[node name="Arena_InnerRing" type="CSGCylinder3D" parent="ArenaIsland_Grass/Arena_Ring1" unique_id=1008895835]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+use_collision = true
+radius = 4.0
+height = 1.0
+sides = 10
+material = ExtResource("18_gold")
+
+[node name="ArenaBorderNorth" type="CSGBox3D" parent="ArenaIsland_Grass" unique_id=610811565]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -8.7)
+use_collision = true
+size = Vector3(22, 0.6, 0.6)
+material = ExtResource("17_stone")
+
+[node name="ArenaBorderSouth" type="CSGBox3D" parent="ArenaIsland_Grass" unique_id=112282534]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 8.7)
+use_collision = true
+size = Vector3(22, 0.6, 0.6)
+material = ExtResource("17_stone")
+
+[node name="ArenaBorderWest" type="CSGBox3D" parent="ArenaIsland_Grass" unique_id=952800191]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.7, 0.5, 0)
+use_collision = true
+size = Vector3(0.6, 0.6, 18)
+material = ExtResource("17_stone")
+
+[node name="AltarWest" parent="ArenaIsland_Grass" unique_id=1346874282 instance=ExtResource("24_altar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.158, 0.5, -0.22)
+
+[node name="ArenaPillar1" parent="ArenaIsland_Grass" unique_id=666254113 instance=ExtResource("23_pillar")]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 8.5, 0.5, -7)
+
+[node name="ArenaPillar2" parent="ArenaIsland_Grass" unique_id=628681257 instance=ExtResource("23_pillar")]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 8.5, 0.5, 7)
+
+[node name="ArenaRock1" parent="ArenaIsland_Grass" unique_id=639164313 instance=ExtResource("22_rock")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -9, 0.5, 6.5)
+
+[node name="ArenaRock2" parent="ArenaIsland_Grass" unique_id=1179743726 instance=ExtResource("22_rock")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0.5, -6.5)
+
+[node name="WestBridge_Seg1" parent="." unique_id=1286402236 instance=ExtResource("29_bridgewood")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0.4, 25.5)
+
+[node name="WestBridge_Stepping1" type="CSGCylinder3D" parent="." unique_id=505784908]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.5, 0, 25.5)
+use_collision = true
+radius = 2.4
+height = 1.0
+material = ExtResource("17_stone")
+
+[node name="WestBridge_Seg2" parent="." unique_id=1911609665 instance=ExtResource("29_bridgewood")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -17, 0.4, 25.5)
+
+[node name="BossSanctuary_Floor" type="CSGCylinder3D" parent="." unique_id=2013136907]
+use_collision = true
+radius = 13.0
+height = 1.0
+sides = 16
+material = ExtResource("17_stone")
+
+[node name="BossSanctuary_Cliff" type="CSGCylinder3D" parent="BossSanctuary_Floor" unique_id=1745054310]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6.5, 0)
+use_collision = true
+radius = 12.0
+height = 12.0
+sides = 12
+cone = true
+material = ExtResource("15_cliff")
+
+[node name="BossSanctuary_Dais" type="CSGCylinder3D" parent="BossSanctuary_Floor" unique_id=377092408]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+use_collision = true
+radius = 7.5
+height = 1.0
+sides = 12
+material = ExtResource("18_gold")
+
+[node name="BossSanctuary_Inner" type="CSGCylinder3D" parent="BossSanctuary_Floor/BossSanctuary_Dais" unique_id=1911861933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+use_collision = true
+radius = 4.5
+height = 1.0
+sides = 10
+material = ExtResource("14_grass")
+
+[node name="AltarBoss" parent="BossSanctuary_Floor" unique_id=1662741844 instance=ExtResource("24_altar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.92, 0.5, 3.1)
+
+[node name="BossPillar1" parent="BossSanctuary_Floor" unique_id=904875003 instance=ExtResource("23_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0.5, 0)
+
+[node name="BossPillar2" parent="BossSanctuary_Floor" unique_id=1646026299 instance=ExtResource("23_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0.5, 0)
+
+[node name="BossPillar3" parent="BossSanctuary_Floor" unique_id=922633705 instance=ExtResource("23_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.5, -8)
+
+[node name="BossPillar4" parent="BossSanctuary_Floor" unique_id=1612015117 instance=ExtResource("23_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.5, -8)
+
+[node name="BossPillar5" parent="BossSanctuary_Floor" unique_id=774791994 instance=ExtResource("23_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.5, 8)
+
+[node name="BossPillar6" parent="BossSanctuary_Floor" unique_id=36324740 instance=ExtResource("23_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.5, 8)
+
+[node name="BossWaterfall" parent="BossSanctuary_Floor" unique_id=140811521 instance=ExtResource("27_waterfall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -12.4, 0.4, 0)
+
+[node name="BridgeSector2" type="CSGBox3D" parent="." unique_id=1914156899]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10.5)
+use_collision = true
+size = Vector3(4.2, 0.8, 6)
+material = ExtResource("17_stone")
+
+[node name="MovingPlatform1" type="CSGBox3D" parent="." unique_id=1914156900]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -17)
+use_collision = true
+size = Vector3(5.5, 0.8, 5.5)
+material = ExtResource("17_stone")
+
+[node name="MovingPlatform_Crystal" parent="MovingPlatform1" unique_id=1527765655 instance=ExtResource("25_crystal")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0.4, 0)
+
+[node name="PlatformSector2" type="CSGBox3D" parent="." unique_id=1914156901]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -28)
+use_collision = true
+size = Vector3(22, 1, 18)
+material = ExtResource("19_grass2")
+
+[node name="Sector2_Cliff" type="CSGBox3D" parent="PlatformSector2" unique_id=1643494003]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6, 0)
+use_collision = true
+size = Vector3(20, 11, 16)
+material = ExtResource("20_cliff2")
+
+[node name="Sector2_PillarLeft" parent="PlatformSector2" unique_id=1965854109 instance=ExtResource("23_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 0.5, -6.5)
+
+[node name="Sector2_PillarRight" parent="PlatformSector2" unique_id=1430716981 instance=ExtResource("23_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 0.5, -6.5)
+
+[node name="Sector2_Crystal1" parent="PlatformSector2" unique_id=1397801860 instance=ExtResource("25_crystal")]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -7.5, 0.5, 5.5)
+
+[node name="Sector2_Crystal2" parent="PlatformSector2" unique_id=656214592 instance=ExtResource("25_crystal")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 7.5, 0.5, 5.5)
+
+[node name="Sector2_Crystal3" parent="PlatformSector2" unique_id=1696562803 instance=ExtResource("25_crystal")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0.5, -6.5)
+
+[node name="EastIsland_Grass" type="CSGCylinder3D" parent="." unique_id=380034196]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 1.5, 22)
+use_collision = true
+radius = 4.5
+height = 1.0
+material = ExtResource("14_grass")
+
+[node name="EastIsland_Cliff" type="CSGCylinder3D" parent="EastIsland_Grass" unique_id=153563673]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.5, 0)
+use_collision = true
+radius = 4.0
+height = 8.0
+cone = true
+material = ExtResource("15_cliff")
+
+[node name="EastTree" parent="EastIsland_Grass" unique_id=1135773094 instance=ExtResource("21_tree")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, -1.5, 0.5, -1)
+
+[node name="EastRock" parent="EastIsland_Grass" unique_id=321881827 instance=ExtResource("22_rock")]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 1.2, 0.5, 1.5)
+
+[node name="EastSteppingStone" type="CSGCylinder3D" parent="." unique_id=1148322073]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5, 0.6, 23.5)
+use_collision = true
+radius = 1.8
+height = 0.8
+material = ExtResource("17_stone")
+
+[node name="CloudsLayer1" parent="." unique_id=1553746286 instance=ExtResource("26_cloud")]
+transform = Transform3D(2.5, 0, 0, 0, 1.8, 0, 0, 0, 2.5, -25, -18, 10)
+
+[node name="CloudsLayer2" parent="." unique_id=439932345 instance=ExtResource("26_cloud")]
+transform = Transform3D(3, 0, 0, 0, 2, 0, 0, 0, 3, 20, -20, -15)
+
+[node name="CloudsLayer3" parent="." unique_id=15281449 instance=ExtResource("26_cloud")]
+transform = Transform3D(2.8, 0, 0, 0, 1.8, 0, 0, 0, 2.8, 0, -22, 45)
+
+[node name="CloudsHigh1" parent="." unique_id=2061572938 instance=ExtResource("26_cloud")]
+transform = Transform3D(2.2, 0, 0, 0, 1.5, 0, 0, 0, 2.2, -45, 15, -40)
+
+[node name="CloudsHigh2" parent="." unique_id=1166153295 instance=ExtResource("26_cloud")]
+transform = Transform3D(2.6, 0, 0, 0, 1.6, 0, 0, 0, 2.6, 40, 12, 35)
+
+[node name="DistantIsland1" parent="." unique_id=621208371 instance=ExtResource("28_islandbg")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -75, 10, -65)
+
+[node name="DistantIsland2" parent="." unique_id=2146517368 instance=ExtResource("28_islandbg")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 85, 18, -45)
+
+[node name="DistantIsland3" parent="." unique_id=1301695648 instance=ExtResource("28_islandbg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, -8, 75)
+
+[node name="DistantIsland4" parent="." unique_id=28271147 instance=ExtResource("28_islandbg")]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 70, -4, 80)
+
+[node name="PathCoin1" parent="." unique_id=81290001 instance=ExtResource("30_coin")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 18.5)
+
+[node name="PathCoin2" parent="." unique_id=81290002 instance=ExtResource("30_coin")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 14.5)
+
+[node name="PathCoin3" parent="." unique_id=81290003 instance=ExtResource("30_coin")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.5, 1.15, 25.5)
+
+[node name="PathCoin4" parent="." unique_id=81290004 instance=ExtResource("30_coin")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 1.15, 22)
 
 [connection signal="body_entered" from="KillPlane" to="." method="_on_kill_plane_body_entered"]
 [connection signal="mob_spawned" from="MobSpawner3D" to="." method="_on_mob_spawner_3d_mob_spawned"]
