@@ -20,7 +20,7 @@ func _setup_scene() -> void:
 	current_scene = level
 
 	# Hide HomeUI so gameplay and coins are front-and-center
-	var home_ui = level.get_node_or_null("HomeUI")
+	var home_ui = level.find_child("HomeUI", true, false)
 	if home_ui != null:
 		home_ui.visible = false
 

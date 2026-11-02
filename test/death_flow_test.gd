@@ -24,15 +24,23 @@ func _run_tests() -> void:
 	await process_frame
 	await process_frame
 
-	var player = level.get_node_or_null("Player")
-	var game_over_modal = level.get_node_or_null("GameOverModal")
+	var player = level.get_node_or_null("Gameplay/Player")
+	if player == null:
+		player = level.get_node_or_null("Player")
+	var game_over_modal = level.get_node_or_null("UI/GameOverModal")
+	if game_over_modal == null:
+		game_over_modal = level.get_node_or_null("GameOverModal")
 	if game_over_modal == null:
 		game_over_modal = root.get_node_or_null("GameOverModal")
 	if game_over_modal == null:
 		game_over_modal = root.find_child("GameOverModal", true, false)
 
-	var upgrade_modal = level.get_node_or_null("UpgradeModal")
-	var wave_manager = level.get_node_or_null("WaveManager")
+	var upgrade_modal = level.get_node_or_null("UI/UpgradeModal")
+	if upgrade_modal == null:
+		upgrade_modal = level.get_node_or_null("UpgradeModal")
+	var wave_manager = level.get_node_or_null("Core/WaveManager")
+	if wave_manager == null:
+		wave_manager = level.get_node_or_null("WaveManager")
 
 	assert(player != null, "Player must exist")
 	assert(game_over_modal != null, "GameOverModal must exist in scene tree")

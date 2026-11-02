@@ -11,6 +11,10 @@ stop_distance = 8.5
 attack_damage = 8
 health = 4
 max_health = 4
+enemy_type_name = "Energy Spitter"
+enemy_color_tint = Color(0.92, 0.3, 1, 1)
+enemy_emissive_tint = Color(0.8, 0.15, 0.95, 1)
+enemy_emissive_energy = 1.2
 
 [node name="bat_model" parent="CollisionShape3D" index="0"]
 transform = Transform3D(-1.1, 0, -9.616506e-08, 0, 1.1, 0, 9.616506e-08, 0, -1.1, 0, 0, 0)

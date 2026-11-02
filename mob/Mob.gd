@@ -10,6 +10,13 @@ signal died
 @export var health: int = 3
 @export var max_health: int = 3
 
+@export var enemy_type_name: String = "Standard Bat"
+@export var enemy_color_tint: Color = Color.WHITE
+@export var enemy_emissive_tint: Color = Color.BLACK
+@export var enemy_emissive_energy: float = 0.0
+@export var enemy_metallic: float = 0.0
+@export var enemy_roughness: float = 0.42
+
 var is_dead: bool = false
 var attack_timer: float = 0.0
 
@@ -44,6 +51,38 @@ func _ready() -> void:
 		timer.timeout.connect(_on_timer_timeout)
 
 	animation_player.play("Idle")
+	_setup_visual_tint()
+
+
+func _setup_visual_tint() -> void:
+	if bat_model == null:
+		return
+	var mesh_node = bat_model.get_node_or_null("Armature/Skeleton3D/bat") as MeshInstance3D
+	if mesh_node == null:
+		return
+
+	if enemy_color_tint != Color.WHITE or enemy_emissive_energy > 0.0 or enemy_metallic > 0.0:
+		var base_mat = mesh_node.get_surface_override_material(0)
+		if base_mat == null:
+			base_mat = mesh_node.get_active_material(0)
+
+		var mat: StandardMaterial3D = null
+		if base_mat is StandardMaterial3D:
+			mat = base_mat.duplicate()
+		else:
+			mat = StandardMaterial3D.new()
+
+		if enemy_color_tint != Color.WHITE:
+			mat.albedo_color = enemy_color_tint
+		if enemy_emissive_energy > 0.0:
+			mat.emission_enabled = true
+			mat.emission = enemy_emissive_tint
+			mat.emission_energy_multiplier = enemy_emissive_energy
+		if enemy_metallic > 0.0:
+			mat.metallic = enemy_metallic
+			mat.roughness = enemy_roughness
+
+		mesh_node.set_surface_override_material(0, mat)
 
 
 func _find_player() -> void:

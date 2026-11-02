@@ -16,10 +16,24 @@ func _ready() -> void:
 	if not is_in_group("island_manager"):
 		add_to_group("island_manager")
 
+	if moving_platform == null:
+		moving_platform = get_node_or_null("../../World/MovingPlatforms/MovingPlatform1")
+		if moving_platform == null:
+			moving_platform = get_node_or_null("../MovingPlatform1")
+		if moving_platform == null and get_tree().current_scene != null:
+			moving_platform = get_tree().current_scene.find_child("MovingPlatform1", true, false) as Node3D
+
 	if moving_platform != null:
 		initial_platform_pos = moving_platform.position
 
 	# Keep Sector 2 bridge sunken until Boss is defeated
+	if bridge_sector_2 == null:
+		bridge_sector_2 = get_node_or_null("../../World/Bridges/BridgeSector2")
+		if bridge_sector_2 == null:
+			bridge_sector_2 = get_node_or_null("../BridgeSector2")
+		if bridge_sector_2 == null and get_tree().current_scene != null:
+			bridge_sector_2 = get_tree().current_scene.find_child("BridgeSector2", true, false) as Node3D
+
 	if bridge_sector_2 != null:
 		bridge_sector_2.position.y = -18.0
 		bridge_sector_2.visible = false

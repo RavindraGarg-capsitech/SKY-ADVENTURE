@@ -30,7 +30,7 @@ func _schedule_next_spawn() -> void:
 	timer.start()
 
 
-func spawn_mob(custom_scene: PackedScene = null, parent_node: Node = null) -> Node3D:
+func spawn_mob(custom_scene: PackedScene = null, parent_node: Node = null, spawn_pos: Vector3 = Vector3.ZERO) -> Node3D:
 	var scene: PackedScene = custom_scene if custom_scene != null else mob_to_spawn
 	if scene == null:
 		push_warning("No mob scene provided to spawn!")
@@ -39,7 +39,10 @@ func spawn_mob(custom_scene: PackedScene = null, parent_node: Node = null) -> No
 	var new_mob: Node3D = scene.instantiate() as Node3D
 	var target_parent: Node = parent_node if parent_node != null else get_tree().current_scene
 	target_parent.add_child(new_mob)
-	new_mob.global_position = marker_3d.global_position
+	if spawn_pos != Vector3.ZERO:
+		new_mob.global_position = spawn_pos
+	else:
+		new_mob.global_position = marker_3d.global_position
 
 	mob_spawned.emit(new_mob)
 	return new_mob

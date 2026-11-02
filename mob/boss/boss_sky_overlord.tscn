@@ -16,6 +16,10 @@ attack_damage = 25
 attack_cooldown = 1.2
 health = 75
 max_health = 75
+enemy_type_name = "Sky Overlord"
+enemy_color_tint = Color(1, 0.22, 0.22, 1)
+enemy_emissive_tint = Color(1, 0.1, 0.1, 1)
+enemy_emissive_energy = 1.6
 
 [node name="CollisionShape3D" parent="." index="0"]
 shape = SubResource("SphereShape3D_boss")

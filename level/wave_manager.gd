@@ -19,6 +19,7 @@ enum TransitionStage {
 @export var transition_duration: float = 3.0
 @export var wave_clear_banner_duration: float = 2.0
 @export var wave_heal_amount: int = 25
+@export var custom_wave_compositions: Dictionary = {}
 
 var current_wave: int = 0
 var is_wave_in_progress: bool = false
@@ -220,6 +221,7 @@ func start_next_wave() -> void:
 
 	var wave_mobs: Array[PackedScene] = _generate_wave_composition(current_wave)
 	var spawn_delay: float = _calculate_spawn_interval(current_wave)
+	var burst_size: int = _calculate_group_size(current_wave)
 
 	if get_node_or_null("/root/GameManager") != null:
 		if is_boss_wave(current_wave):
@@ -227,7 +229,7 @@ func start_next_wave() -> void:
 		else:
 			GameManager.change_state(GameManager.GameState.PLAYING)
 
-	enemy_manager.start_wave_spawns(wave_mobs, spawn_delay)
+	enemy_manager.start_wave_spawns(wave_mobs, spawn_delay, burst_size)
 	wave_started.emit(current_wave, wave_mobs.size())
 	remaining_enemies_changed.emit(wave_mobs.size())
 
@@ -249,63 +251,157 @@ func abort_wave_transition() -> void:
 		modal.hide_modal()
 
 
-func _generate_wave_composition(wave_num: int) -> Array[PackedScene]:
-	var list: Array[PackedScene] = []
+func get_wave_composition(wave_num: int) -> Dictionary:
+	if custom_wave_compositions.has(wave_num):
+		return custom_wave_compositions[wave_num]
 
 	match wave_num:
 		1:
-			for i in range(5):
-				list.append(STANDARD_BAT_SCENE)
+			return {
+				"standard": 5, "scout": 0, "armored": 0, "spitter": 0, "boss": 0,
+				"set_name": "Swarm Set", "total": 5
+			}
 		2:
-			var fast_scene = fast_bat_scene if fast_bat_scene != null else STANDARD_BAT_SCENE
-			for i in range(6):
-				list.append(STANDARD_BAT_SCENE)
-			for i in range(2):
-				list.append(fast_scene)
+			return {
+				"standard": 5, "scout": 3, "armored": 0, "spitter": 0, "boss": 0,
+				"set_name": "Swarm Set", "total": 8
+			}
 		3:
-			var fast_scene = fast_bat_scene if fast_bat_scene != null else STANDARD_BAT_SCENE
-			var armored_scene = armored_bat_scene if armored_bat_scene != null else STANDARD_BAT_SCENE
-			for i in range(7):
-				list.append(STANDARD_BAT_SCENE)
-			for i in range(3):
-				list.append(fast_scene)
-			for i in range(2):
-				list.append(armored_scene)
+			return {
+				"standard": 5, "scout": 3, "armored": 2, "spitter": 0, "boss": 0,
+				"set_name": "Heavy Set", "total": 10
+			}
 		4:
-			var fast_scene = fast_bat_scene if fast_bat_scene != null else STANDARD_BAT_SCENE
-			var armored_scene = armored_bat_scene if armored_bat_scene != null else STANDARD_BAT_SCENE
-			var spitter_scene = spitter_bat_scene if spitter_bat_scene != null else STANDARD_BAT_SCENE
-			for i in range(7):
-				list.append(STANDARD_BAT_SCENE)
-			for i in range(4):
-				list.append(fast_scene)
-			for i in range(2):
-				list.append(armored_scene)
-			for i in range(2):
-				list.append(spitter_scene)
+			return {
+				"standard": 5, "scout": 4, "armored": 2, "spitter": 1, "boss": 0,
+				"set_name": "Mixed Set", "total": 12
+			}
 		5:
-			if boss_scene != null:
-				list.append(boss_scene)
-				for i in range(4):
-					list.append(STANDARD_BAT_SCENE)
-			else:
-				for i in range(18):
-					list.append(STANDARD_BAT_SCENE)
+			return {
+				"standard": 3, "scout": 2, "armored": 0, "spitter": 0, "boss": 1,
+				"set_name": "Boss Set", "total": 6
+			}
+		6:
+			return {
+				"standard": 6, "scout": 4, "armored": 3, "spitter": 2, "boss": 0,
+				"set_name": "Mixed Set", "total": 15
+			}
+		7:
+			return {
+				"standard": 0, "scout": 5, "armored": 4, "spitter": 3, "boss": 0,
+				"set_name": "Ranged Set", "total": 12
+			}
+		8:
+			return {
+				"standard": 8, "scout": 5, "armored": 4, "spitter": 3, "boss": 0,
+				"set_name": "Swarm Set", "total": 20
+			}
+		9:
+			return {
+				"standard": 0, "scout": 6, "armored": 6, "spitter": 4, "boss": 0,
+				"set_name": "Elite Set", "total": 16
+			}
+		10:
+			return {
+				"standard": 0, "scout": 4, "armored": 3, "spitter": 2, "boss": 1,
+				"set_name": "Boss Set", "total": 10
+			}
 		_:
-			var total = 15 + (wave_num - 4) * 3
-			var fast_scene = fast_bat_scene if fast_bat_scene != null else STANDARD_BAT_SCENE
-			var armored_scene = armored_bat_scene if armored_bat_scene != null else STANDARD_BAT_SCENE
-			var spitter_scene = spitter_bat_scene if spitter_bat_scene != null else STANDARD_BAT_SCENE
-			for i in range(total):
-				var r = randf()
-				if r < 0.4:
-					list.append(STANDARD_BAT_SCENE)
-				elif r < 0.65:
-					list.append(fast_scene)
-				elif r < 0.85:
-					list.append(armored_scene)
-				else:
-					list.append(spitter_scene)
+			if is_boss_wave(wave_num):
+				var extra_tier: int = int((wave_num - 10) / 5)
+				return {
+					"standard": 2 + extra_tier,
+					"scout": 4 + extra_tier * 2,
+					"armored": 3 + extra_tier * 2,
+					"spitter": 2 + extra_tier * 2,
+					"boss": 1,
+					"set_name": "Boss Set",
+					"total": 12 + extra_tier * 7
+				}
+
+			var cycle: int = (wave_num - 11) % 4
+			var scale_w: int = wave_num - 10
+			match cycle:
+				0:
+					return {
+						"standard": 8 + scale_w,
+						"scout": 6 + int(scale_w * 0.8),
+						"armored": 4 + int(scale_w * 0.4),
+						"spitter": 3 + int(scale_w * 0.3),
+						"boss": 0,
+						"set_name": "Swarm Set",
+						"total": 21 + int(scale_w * 2.5)
+					}
+				1:
+					return {
+						"standard": 5 + int(scale_w * 0.4),
+						"scout": 4 + int(scale_w * 0.4),
+						"armored": 7 + scale_w,
+						"spitter": 3 + int(scale_w * 0.4),
+						"boss": 0,
+						"set_name": "Heavy Set",
+						"total": 19 + int(scale_w * 2.2)
+					}
+				2:
+					return {
+						"standard": 3 + int(scale_w * 0.3),
+						"scout": 6 + int(scale_w * 0.5),
+						"armored": 4 + int(scale_w * 0.4),
+						"spitter": 6 + scale_w,
+						"boss": 0,
+						"set_name": "Ranged Set",
+						"total": 19 + int(scale_w * 2.2)
+					}
+				_:
+					return {
+						"standard": 0,
+						"scout": 7 + scale_w,
+						"armored": 7 + scale_w,
+						"spitter": 5 + int(scale_w * 0.7),
+						"boss": 0,
+						"set_name": "Elite Set",
+						"total": 19 + int(scale_w * 2.7)
+					}
+
+
+func _generate_wave_composition(wave_num: int) -> Array[PackedScene]:
+	var comp: Dictionary = get_wave_composition(wave_num)
+	var list: Array[PackedScene] = []
+
+	var standard_count: int = comp.get("standard", 0)
+	var scout_count: int = comp.get("scout", 0)
+	var armored_count: int = comp.get("armored", 0)
+	var spitter_count: int = comp.get("spitter", 0)
+	var boss_count: int = comp.get("boss", 0)
+
+	var std_scene = STANDARD_BAT_SCENE
+	var sct_scene = fast_bat_scene if fast_bat_scene != null else STANDARD_BAT_SCENE
+	var arm_scene = armored_bat_scene if armored_bat_scene != null else STANDARD_BAT_SCENE
+	var spt_scene = spitter_bat_scene if spitter_bat_scene != null else STANDARD_BAT_SCENE
+	var bss_scene = boss_scene if boss_scene != null else STANDARD_BAT_SCENE
+
+	if boss_count > 0:
+		for b in range(boss_count):
+			list.append(bss_scene)
+
+	var std_left: int = standard_count
+	var sct_left: int = scout_count
+	var arm_left: int = armored_count
+	var spt_left: int = spitter_count
+
+	while std_left > 0 or sct_left > 0 or arm_left > 0 or spt_left > 0:
+		if sct_left > 0:
+			list.append(sct_scene)
+			sct_left -= 1
+		if std_left > 0:
+			list.append(std_scene)
+			std_left -= 1
+		if arm_left > 0:
+			list.append(arm_scene)
+			arm_left -= 1
+		if spt_left > 0:
+			list.append(spt_scene)
+			spt_left -= 1
 
 	return list
 
@@ -313,19 +409,38 @@ func _generate_wave_composition(wave_num: int) -> Array[PackedScene]:
 func _calculate_spawn_interval(wave_num: int) -> float:
 	match wave_num:
 		1:
-			return 1.4
+			return 1.6
 		2:
-			return 1.2
+			return 1.4
 		3:
-			return 1.0
+			return 1.2
 		4:
+			return 1.1
+		5:
+			return 1.5
+		6, 7:
+			return 1.0
+		8, 9:
 			return 0.9
+		10:
+			return 1.2
 		_:
-			return 0.8
+			return 0.85
+
+
+func _calculate_group_size(wave_num: int) -> int:
+	if wave_num <= 2:
+		return 1
+	elif wave_num <= 5:
+		return 2
+	elif wave_num <= 8:
+		return 2
+	else:
+		return 3
 
 
 func is_boss_wave(wave_num: int) -> bool:
-	return wave_num == 5 or wave_num % 5 == 0
+	return wave_num == 5 or wave_num == 10 or (wave_num > 10 and wave_num % 5 == 0)
 
 
 func _on_remaining_enemies_changed(count: int) -> void:

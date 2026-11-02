@@ -24,9 +24,15 @@ func _run_tests() -> void:
 	await process_frame
 	await process_frame
 
-	var player = level.get_node_or_null("Player")
-	var wave_mgr = level.get_node_or_null("WaveManager")
-	var hud = level.get_node_or_null("HUD")
+	var player = level.get_node_or_null("Gameplay/Player")
+	if player == null:
+		player = level.get_node_or_null("Player")
+	var wave_mgr = level.get_node_or_null("Core/WaveManager")
+	if wave_mgr == null:
+		wave_mgr = level.get_node_or_null("WaveManager")
+	var hud = level.get_node_or_null("UI/HUD")
+	if hud == null:
+		hud = level.get_node_or_null("HUD")
 
 	assert(player != null, "Player must exist")
 	assert(wave_mgr != null, "WaveManager must exist")

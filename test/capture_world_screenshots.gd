@@ -21,11 +21,11 @@ func _setup_scene() -> void:
 	current_scene = level
 
 	# Hide HomeUI so the environment is clearly visible
-	var home_ui = level.get_node_or_null("HomeUI")
+	var home_ui = level.find_child("HomeUI", true, false)
 	if home_ui != null:
 		home_ui.visible = false
 
-	var hud = level.get_node_or_null("HUD")
+	var hud = level.find_child("HUD", true, false)
 	if hud != null:
 		hud.visible = false
 
@@ -36,7 +36,7 @@ func _setup_scene() -> void:
 	cam.current = true
 
 	# Unlock Sector 2 bridge & platform visually for the shot
-	var bridge_sec2 = level.get_node_or_null("BridgeSector2")
+	var bridge_sec2 = level.find_child("BridgeSector2", true, false)
 	if bridge_sec2 != null:
 		bridge_sec2.position.y = 0.0
 		bridge_sec2.visible = true

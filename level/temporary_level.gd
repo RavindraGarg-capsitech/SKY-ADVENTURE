@@ -3,21 +3,27 @@ extends Node3D
 
 var player_score: int = 0
 
-@onready var label: Label = $MobSpawner3D/Label
+@onready var label: Label = get_node_or_null("Gameplay/SpawnPoints/MobSpawner3D/Label")
 
 
 func _ready() -> void:
+	if label == null:
+		label = find_child("Label", true, false) as Label
 	if label != null:
 		label.visible = false
 	update_score()
 	_ensure_game_over_modal()
 
-	var enemy_mgr: Node = get_node_or_null("EnemyManager")
+	var enemy_mgr: Node = get_node_or_null("Core/EnemyManager")
+	if enemy_mgr == null:
+		enemy_mgr = get_tree().get_first_node_in_group("enemy_manager")
 	if enemy_mgr != null and enemy_mgr.has_signal("enemy_died"):
 		if not enemy_mgr.enemy_died.is_connected(_on_enemy_manager_enemy_died):
 			enemy_mgr.enemy_died.connect(_on_enemy_manager_enemy_died)
 
-	var spawner2: Node = get_node_or_null("MobSpawner3D2")
+	var spawner2: Node = get_node_or_null("Gameplay/SpawnPoints/MobSpawner3D2")
+	if spawner2 == null:
+		spawner2 = find_child("MobSpawner3D2", true, false)
 	if spawner2 != null and spawner2.has_signal("mob_spawned"):
 		if not spawner2.mob_spawned.is_connected(_on_mob_spawner_3d_mob_spawned):
 			spawner2.mob_spawned.connect(_on_mob_spawner_3d_mob_spawned)
@@ -50,7 +56,7 @@ func update_score() -> void:
 
 
 func _on_mob_spawner_3d_mob_spawned(mob: Variant) -> void:
-	if mob == null or get_node_or_null("EnemyManager") != null:
+	if mob == null or get_node_or_null("Core/EnemyManager") != null or get_node_or_null("EnemyManager") != null:
 		return
 
 	if mob.has_signal("died"):

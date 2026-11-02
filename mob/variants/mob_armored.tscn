@@ -12,6 +12,10 @@ attack_damage = 20
 attack_cooldown = 1.4
 health = 8
 max_health = 8
+enemy_type_name = "Armored Bat"
+enemy_color_tint = Color(0.72, 0.75, 0.85, 1)
+enemy_metallic = 0.88
+enemy_roughness = 0.26
 
 [node name="CollisionShape3D" parent="." index="0"]
 shape = SubResource("SphereShape3D_armored")

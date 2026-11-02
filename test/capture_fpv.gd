@@ -9,11 +9,11 @@ func _setup_and_capture() -> void:
 	root.add_child(level)
 	current_scene = level
 
-	var home_ui = level.get_node_or_null("HomeUI")
+	var home_ui = level.find_child("HomeUI", true, false)
 	if home_ui != null:
 		home_ui.visible = false
 
-	var player = level.get_node_or_null("Player")
+	var player = level.find_child("Player", true, false)
 	var player_cam = player.get_node("%Camera3D")
 	player_cam.current = true
 

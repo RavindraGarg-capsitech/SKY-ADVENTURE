@@ -25,10 +25,18 @@ func _run_tests() -> void:
 	await process_frame
 	await process_frame
 
-	var player = level.get_node_or_null("Player")
-	var enemy_mgr = level.get_node_or_null("EnemyManager")
-	var reward_mgr = level.get_node_or_null("RewardManager")
-	var hud = level.get_node_or_null("HUD")
+	var player = level.get_node_or_null("Gameplay/Player")
+	if player == null:
+		player = level.get_node_or_null("Player")
+	var enemy_mgr = level.get_node_or_null("Core/EnemyManager")
+	if enemy_mgr == null:
+		enemy_mgr = level.get_node_or_null("EnemyManager")
+	var reward_mgr = level.get_node_or_null("Core/RewardManager")
+	if reward_mgr == null:
+		reward_mgr = level.get_node_or_null("RewardManager")
+	var hud = level.get_node_or_null("UI/HUD")
+	if hud == null:
+		hud = level.get_node_or_null("HUD")
 
 	assert(player != null, "Player must exist")
 	assert(enemy_mgr != null, "EnemyManager must exist")
