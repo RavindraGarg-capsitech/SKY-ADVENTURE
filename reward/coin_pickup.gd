@@ -9,16 +9,35 @@ var is_collected: bool = false
 var move_speed: float = 0.0
 var base_y: float = 0.0
 var bob_time: float = 0.0
+var collect_tween: Tween = null
 
 @onready var coin_visual: Node3D = $CoinVisual
 @onready var sparkle: MeshInstance3D = $Sparkle
+@onready var omni_light: OmniLight3D = get_node_or_null("OmniLight3D")
+@onready var collision_shape: CollisionShape3D = get_node_or_null("CollisionShape3D")
 
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	base_y = position.y
 	bob_time = randf() * TAU
+	_ensure_above_ground()
 	_find_player()
+
+
+func _ensure_above_ground() -> void:
+	var current_scene = get_tree().current_scene
+	if current_scene is Node3D and current_scene.get_world_3d() != null:
+		var space_state = current_scene.get_world_3d().direct_space_state
+		var ray_start = Vector3(global_position.x, global_position.y + 2.0, global_position.z)
+		var ray_end = Vector3(global_position.x, global_position.y - 4.0, global_position.z)
+		var query = PhysicsRayQueryParameters3D.create(ray_start, ray_end, 1)
+		var hit = space_state.intersect_ray(query)
+		if not hit.is_empty() and hit.has("position"):
+			var min_allowed_y = hit.position.y + 0.85
+			if global_position.y < min_allowed_y:
+				global_position.y = min_allowed_y
+				base_y = position.y
 
 
 func _find_player() -> void:
@@ -72,17 +91,39 @@ func collect() -> void:
 		return
 
 	is_collected = true
+	# Immediately disable collision & detection to prevent duplicate triggers
 	set_deferred("monitoring", false)
+	set_deferred("monitorable", false)
+	if collision_shape != null:
+		collision_shape.set_deferred("disabled", true)
 
-	if get_node_or_null("/root/AudioManager") != null:
-		AudioManager.play_coin_sound()
+	var am = get_node_or_null("/root/AudioManager")
+	if am != null and am.has_method("play_coin_sound"):
+		am.play_coin_sound()
 
 	var rm = get_tree().get_first_node_in_group("reward_manager")
 	if rm != null and rm.has_method("add_coins"):
 		rm.add_coins(coin_value)
 
-	# Visual collection pop & burst
-	var tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(self, "scale", scale * 1.5, 0.16)
-	tween.tween_property(self, "position:y", position.y + 0.5, 0.16)
-	tween.chain().tween_callback(queue_free)
+	# New Polish Collection Animation:
+	# 1. Rise quickly upward by ~1.2m
+	# 2. Spin rapidly around Y-axis (2 full rotations = TAU * 2)
+	# 3. Smoothly scale down to 0
+	# 4. Golden flash / sparkle pulse
+	# 5. Quick total duration (~0.4s)
+	var target_pos: Vector3 = global_position + Vector3.UP * 1.25
+	collect_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	collect_tween.tween_property(self, "global_position", target_pos, 0.4)
+	if coin_visual != null:
+		collect_tween.tween_property(coin_visual, "rotation:y", coin_visual.rotation.y + TAU * 2.0, 0.4)
+	collect_tween.tween_property(self, "scale", Vector3.ZERO, 0.4)
+
+	if omni_light != null:
+		omni_light.light_energy = 3.5
+		collect_tween.tween_property(omni_light, "light_energy", 0.0, 0.4)
+
+	if sparkle != null:
+		collect_tween.tween_property(sparkle, "scale", sparkle.scale * 2.0, 0.2)
+		collect_tween.tween_property(sparkle, "scale", Vector3.ZERO, 0.2).set_delay(0.2)
+
+	collect_tween.chain().tween_callback(queue_free)

@@ -428,15 +428,8 @@ func _calculate_spawn_interval(wave_num: int) -> float:
 			return 0.85
 
 
-func _calculate_group_size(wave_num: int) -> int:
-	if wave_num <= 2:
-		return 1
-	elif wave_num <= 5:
-		return 2
-	elif wave_num <= 8:
-		return 2
-	else:
-		return 3
+func _calculate_group_size(_wave_num: int) -> int:
+	return 1
 
 
 func is_boss_wave(wave_num: int) -> bool:

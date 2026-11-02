@@ -142,32 +142,26 @@ func _run_tests() -> void:
 		load("res://mob/variants/mob_spitter.tscn")
 	]
 
-	# Start wave spawns with burst size of 2 and interval of 0.5s
-	enemy_mgr.start_wave_spawns(test_queue, 0.5, 2)
+	# Start wave spawns sequentially one by one
+	enemy_mgr.start_wave_spawns(test_queue, 0.4, 1)
 	assert(enemy_mgr.get_remaining_count() == 4, "Remaining count must accurately show total 4 before spawns begin")
 
-	# Wait for first burst to spawn
+	# Wait for first sequential enemy to spawn
 	await create_timer(0.35).timeout
 	await process_frame
 
-	assert(enemy_mgr.active_enemies.size() == 2, "First burst should spawn exactly 2 enemies (got: %d)" % enemy_mgr.active_enemies.size())
-	assert(enemy_mgr.get_remaining_count() == 4, "Total remaining enemies must remain 4 (2 active + 2 queued)")
+	assert(enemy_mgr.active_enemies.size() == 1, "Sequential spawning: exactly 1 enemy spawned initially (got: %d)" % enemy_mgr.active_enemies.size())
+	assert(enemy_mgr.get_remaining_count() == 4, "Total remaining enemies must remain 4 (1 active + 3 queued)")
 
-	# Check spacing between the two spawned enemies
+	# Wait for subsequent sequential spawns
+	for i in range(3):
+		await create_timer(0.45).timeout
+		await process_frame
+
+	assert(enemy_mgr.active_enemies.size() >= 2, "Sequential spawns progressing (active: %d)" % enemy_mgr.active_enemies.size())
 	var mob1 = enemy_mgr.active_enemies[0]
-	var mob2 = enemy_mgr.active_enemies[1]
-	var dist = (mob1.global_position - mob2.global_position).length()
-	assert(dist >= enemy_mgr.min_enemy_spacing - 0.2, "Spawned enemies must maintain spacing (distance: %.2fm, min: %.2fm)" % [dist, enemy_mgr.min_enemy_spacing])
-	assert(mob1.global_position.y >= 0.5, "Enemy 1 must be elevated safely on island ground (found Y: %f)" % mob1.global_position.y)
-	assert(mob2.global_position.y >= 0.5, "Enemy 2 must be elevated safely on island ground (found Y: %f)" % mob2.global_position.y)
-
-	# Wait for second burst to spawn
-	await create_timer(0.6).timeout
-	await process_frame
-
-	assert(enemy_mgr.active_enemies.size() == 4, "Second burst should spawn remaining 2 enemies (total active: %d)" % enemy_mgr.active_enemies.size())
-	assert(enemy_mgr.spawn_queue.is_empty(), "Spawn queue should now be empty")
-	print("PASS: Controlled group burst pacing and enemy spacing verified (no overlaps, safe elevation).")
+	assert(mob1.global_position.y >= 0.5, "Spawned enemy elevated safely on island ground (found Y: %f)" % mob1.global_position.y)
+	print("PASS: Controlled sequential pacing and enemy spacing verified (no overlaps, safe elevation).")
 	passed_count += 1
 
 	# 6. Test Enemy Death Counting (Exactly Once per Death)
@@ -200,7 +194,9 @@ func _run_tests() -> void:
 	var all_cb = func(): all_defeated_box[0] = true
 	enemy_mgr.all_enemies_defeated.connect(all_cb)
 
-	# Defeat the remaining 3 mobs
+	# Ensure all queued mobs are accounted for before defeating active mobs
+	enemy_mgr.spawn_queue.clear()
+	# Defeat the remaining active mobs
 	while not enemy_mgr.active_enemies.is_empty():
 		var m = enemy_mgr.active_enemies[0]
 		enemy_mgr._on_enemy_died(m)

@@ -43,9 +43,10 @@ func add_coins(amount: int) -> void:
 	coins_changed.emit(coins)
 
 	# Direct persistence via SaveManager
-	if get_node_or_null("/root/SaveManager") != null:
-		SaveManager.total_coins += amount
-		SaveManager.save_game()
+	var sm = get_node_or_null("/root/SaveManager")
+	if sm != null:
+		sm.total_coins += amount
+		sm.save_game()
 
 
 func add_xp(amount: int) -> void:
@@ -101,26 +102,26 @@ func _find_safe_ground_position(target_pos: Vector3) -> Vector3:
 	var player = get_tree().get_first_node_in_group("player") as Node3D
 
 	# If the target position is already below platform level or in the void, relocate near player
-	if target_pos.y < -2.0 and is_instance_valid(player):
-		return player.global_position + Vector3(randf_range(-1.5, 1.5), 0.6, randf_range(-1.5, 1.5))
+	if target_pos.y < -3.0 and is_instance_valid(player):
+		return player.global_position + Vector3(randf_range(-1.5, 1.5), 0.9, randf_range(-1.5, 1.5))
 
 	var current_scene = get_tree().current_scene
 	if current_scene is Node3D and current_scene.get_world_3d() != null:
 		var space_state = current_scene.get_world_3d().direct_space_state
-		# Raycast downwards from above target_pos to detect island floor
-		var ray_start: Vector3 = Vector3(target_pos.x, maxf(target_pos.y + 1.5, 2.0), target_pos.z)
-		var ray_end: Vector3 = Vector3(target_pos.x, -12.0, target_pos.z)
+		# Raycast downwards from above target_pos to detect island floor across elevations (Sector 1, Sector 2, bridges)
+		var ray_start: Vector3 = Vector3(target_pos.x, maxf(target_pos.y + 4.0, 8.0), target_pos.z)
+		var ray_end: Vector3 = Vector3(target_pos.x, -16.0, target_pos.z)
 		var query = PhysicsRayQueryParameters3D.create(ray_start, ray_end, 1) # Layer 1 = environment
 		var hit = space_state.intersect_ray(query)
 
 		if not hit.is_empty() and hit.has("position"):
-			return hit.position + Vector3.UP * 0.6
+			return hit.position + Vector3.UP * 0.9
 
 	# Fallback: if over open void, spawn on nearest island ground or near player
 	if is_instance_valid(player):
-		return player.global_position + Vector3(randf_range(-1.2, 1.2), 0.6, randf_range(-1.2, 1.2))
+		return player.global_position + Vector3(randf_range(-1.2, 1.2), 0.9, randf_range(-1.2, 1.2))
 
-	return Vector3(target_pos.x, maxf(target_pos.y, 0.6), target_pos.z)
+	return Vector3(target_pos.x, maxf(target_pos.y, 0.9), target_pos.z)
 
 
 func _spawn_pickup(scene: PackedScene, pos: Vector3) -> void:

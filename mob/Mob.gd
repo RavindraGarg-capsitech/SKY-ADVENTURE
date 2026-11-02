@@ -184,11 +184,12 @@ func play_hurt(amount: int = 1) -> void:
 				knockback_direction = Vector3.BACK
 
 			apply_central_impulse(
-				knockback_direction * 5.0 + Vector3.UP * 2.0
+				knockback_direction * 2.0 + Vector3.UP * 2.0
 			)
 
-		# Rotate around Y, not Z.
-		apply_torque_impulse(Vector3(0.0, 10.0, 0.0))
+		# Slow rotation around Y-axis only.
+		angular_damp = 5.0
+		apply_torque_impulse(Vector3(0.0, 2.0, 0.0))
 
 		ko_sound.play()
 		timer.start()
