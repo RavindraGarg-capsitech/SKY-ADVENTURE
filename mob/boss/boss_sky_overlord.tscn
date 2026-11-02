@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://c5overlord9k1v2"]
+
+[ext_resource type="PackedScene" uid="uid://cfrh7v3obpgsh" path="res://mob/mob.tscn" id="1_mob_base"]
+[ext_resource type="Script" path="res://mob/boss/boss_sky_overlord.gd" id="2_boss_script"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_boss"]
+radius = 0.65
+
+[node name="BossSkyOverlord" instance=ExtResource("1_mob_base")]
+mass = 5.0
+script = ExtResource("2_boss_script")
+barrage_interval = 3.2
+speed = 3.2
+stop_distance = 2.2
+attack_damage = 25
+attack_cooldown = 1.2
+health = 75
+max_health = 75
+
+[node name="CollisionShape3D" parent="." index="0"]
+shape = SubResource("SphereShape3D_boss")
+
+[node name="bat_model" parent="CollisionShape3D" index="0"]
+transform = Transform3D(-2.6, 0, -2.272992e-07, 0, 2.6, 0, 2.272992e-07, 0, -2.6, 0, 0, 0)

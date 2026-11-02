@@ -1,6 +1,14 @@
 
 extends CharacterBody3D
 
+signal health_changed(current_health: int, max_health: int)
+signal player_died
+
+@export var max_health: int = 100
+@export var current_health: int = 100
+
+var is_dead: bool = false
+
 const SPEED: float = 5.5
 const GRAVITY: float = 20.0
 const JUMP_VELOCITY: float = 10.0
@@ -8,10 +16,17 @@ const MOUSE_SENSITIVITY: float = 0.5
 const LOOK_SENSITIVITY: float = 0.2
 
 func _ready() -> void:
+	if not is_in_group("player"):
+		add_to_group("player")
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	current_health = max_health
+	health_changed.emit(current_health, max_health)
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if is_dead:
+		return
+
 	if event.is_action_pressed("ui_cancel"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		return
@@ -42,6 +57,9 @@ func _rotate_camera(relative: Vector2) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if is_dead:
+		return
+
 	# Keyboard movement
 	var input_direction: Vector2 = Input.get_vector(
 		"move_left",
@@ -101,3 +119,37 @@ func shoot_bullet() -> void:
 
 	%Timer.start()
 	%AudioStreamPlayer.play()
+
+
+func take_damage(amount: int) -> void:
+	if is_dead or amount <= 0:
+		return
+
+	current_health = clampi(current_health - amount, 0, max_health)
+	health_changed.emit(current_health, max_health)
+
+	if current_health <= 0:
+		die()
+
+
+func heal(amount: int) -> void:
+	if is_dead or amount <= 0:
+		return
+
+	current_health = clampi(current_health + amount, 0, max_health)
+	health_changed.emit(current_health, max_health)
+
+
+func die() -> void:
+	if is_dead:
+		return
+
+	is_dead = true
+	velocity = Vector3.ZERO
+	set_physics_process(false)
+	player_died.emit()
+
+	if get_node_or_null("/root/GameManager") != null:
+		GameManager.change_state(GameManager.GameState.GAME_OVER)
+	else:
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)

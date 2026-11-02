@@ -1,0 +1,216 @@
+[gd_scene format=3 uid="uid://c6508k0b81h3u"]
+
+[ext_resource type="Script" path="res://ui/hud.gd" id="1_hud01"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.12, 0.12, 0.14, 0.8)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
+bg_color = Color(0.18, 0.8, 0.35, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_health"]
+font_size = 20
+outline_size = 4
+outline_color = Color(0, 0, 0, 0.9)
+
+[sub_resource type="LabelSettings" id="LabelSettings_wave"]
+font_size = 26
+font_color = Color(1, 0.84, 0.2, 1)
+outline_size = 6
+outline_color = Color(0, 0, 0, 0.9)
+
+[sub_resource type="LabelSettings" id="LabelSettings_enemies"]
+font_size = 20
+font_color = Color(0.9, 0.9, 0.9, 1)
+outline_size = 4
+outline_color = Color(0, 0, 0, 0.9)
+
+[sub_resource type="LabelSettings" id="LabelSettings_banner_title"]
+font_size = 46
+font_color = Color(1, 0.85, 0.1, 1)
+outline_size = 10
+outline_color = Color(0.05, 0.05, 0.05, 0.95)
+
+[sub_resource type="LabelSettings" id="LabelSettings_banner_sub"]
+font_size = 24
+font_color = Color(1, 1, 1, 1)
+outline_size = 6
+outline_color = Color(0.1, 0.1, 0.1, 0.9)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_boss_fill"]
+bg_color = Color(0.85, 0.15, 0.2, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_boss_title"]
+font_size = 22
+font_color = Color(1, 0.3, 0.3, 1)
+outline_size = 6
+outline_color = Color(0, 0, 0, 0.95)
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud01")
+
+[node name="HealthContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 410.0
+offset_bottom = 90.0
+
+[node name="HealthBar" type="ProgressBar" parent="HealthContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
+value = 100.0
+show_percentage = false
+
+[node name="HealthLabel" type="Label" parent="HealthContainer/HealthBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "HP: 100 / 100"
+label_settings = SubResource("LabelSettings_health")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="WaveContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -320.0
+offset_top = 50.0
+offset_right = -50.0
+offset_bottom = 120.0
+grow_horizontal = 0
+
+[node name="WaveLabel" type="Label" parent="WaveContainer"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 35.0
+grow_horizontal = 2
+text = "Wave: 1"
+label_settings = SubResource("LabelSettings_wave")
+horizontal_alignment = 2
+
+[node name="EnemiesLabel" type="Label" parent="WaveContainer"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Enemies Remaining: 0"
+label_settings = SubResource("LabelSettings_enemies")
+horizontal_alignment = 2
+
+[node name="TransitionContainer" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -100.0
+offset_right = 350.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="TransitionContainer"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+grow_horizontal = 2
+text = "WAVE CLEARED!"
+label_settings = SubResource("LabelSettings_banner_title")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SubTitle" type="Label" parent="TransitionContainer"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -45.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Next wave in 3.0s"
+label_settings = SubResource("LabelSettings_banner_sub")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BossContainer" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 45.0
+offset_right = 300.0
+offset_bottom = 110.0
+grow_horizontal = 2
+
+[node name="BossNameLabel" type="Label" parent="BossContainer"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 28.0
+grow_horizontal = 2
+text = "SKY OVERLORD"
+label_settings = SubResource("LabelSettings_boss_title")
+horizontal_alignment = 1
+
+[node name="BossHealthBar" type="ProgressBar" parent="BossContainer"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/background = SubResource("StyleBoxFlat_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_boss_fill")
+value = 100.0
+show_percentage = false
+
+[node name="BossHealthLabel" type="Label" parent="BossContainer/BossHealthBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "100 / 100"
+label_settings = SubResource("LabelSettings_health")
+horizontal_alignment = 1
+vertical_alignment = 1

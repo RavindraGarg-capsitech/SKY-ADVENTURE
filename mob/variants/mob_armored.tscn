@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://b2arm8k1p7m4v"]
+
+[ext_resource type="PackedScene" uid="uid://cfrh7v3obpgsh" path="res://mob/mob.tscn" id="1_mob_base"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_armored"]
+radius = 0.33
+
+[node name="MobArmored" instance=ExtResource("1_mob_base")]
+mass = 2.5
+speed = 2.0
+attack_damage = 20
+attack_cooldown = 1.4
+health = 8
+max_health = 8
+
+[node name="CollisionShape3D" parent="." index="0"]
+shape = SubResource("SphereShape3D_armored")
+
+[node name="bat_model" parent="CollisionShape3D" index="0"]
+transform = Transform3D(-1.35, 0, -1.180207e-07, 0, 1.35, 0, 1.180207e-07, 0, -1.35, 0, 0, 0)

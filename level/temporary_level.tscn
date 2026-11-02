@@ -5,6 +5,9 @@
 [ext_resource type="PackedScene" uid="uid://obox1utpmqjq" path="res://Player.tscn" id="2_bc4qa"]
 [ext_resource type="PackedScene" uid="uid://cn7p0beeqe516" path="res://mob/spawner/mob_spawner_3d.tscn" id="3_gmctb"]
 [ext_resource type="Script" uid="uid://dhkhjul6s04rb" path="res://level/home_ui.gd" id="5_q5axl"]
+[ext_resource type="PackedScene" uid="uid://c6508k0b81h3u" path="res://ui/hud.tscn" id="6_hud01"]
+[ext_resource type="Script" path="res://mob/enemy_manager.gd" id="7_enemymgr"]
+[ext_resource type="Script" path="res://level/wave_manager.gd" id="8_wavemgr"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_uvm4r"]
 
@@ -170,6 +173,14 @@ grow_vertical = 0
 [node name="ShootButton" type="Button" parent="MobileUI" unique_id=392589512]
 offset_right = 8.0
 offset_bottom = 8.0
+
+[node name="EnemyManager" type="Node3D" parent="." unique_id=312458901]
+script = ExtResource("7_enemymgr")
+
+[node name="WaveManager" type="Node3D" parent="." unique_id=412458902]
+script = ExtResource("8_wavemgr")
+
+[node name="HUD" parent="." unique_id=741029851 instance=ExtResource("6_hud01")]
 
 [node name="HomeUI" type="CanvasLayer" parent="." unique_id=1489525138]
 script = ExtResource("5_q5axl")

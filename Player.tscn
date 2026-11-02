@@ -7,7 +7,7 @@
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_uvm4r"]
 
-[node name="Player" type="CharacterBody3D" unique_id=1291102696]
+[node name="Player" type="CharacterBody3D" unique_id=1291102696 groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.008326858, 0)
 collision_mask = 3
 script = ExtResource("1_kpjcp")

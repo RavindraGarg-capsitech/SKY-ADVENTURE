@@ -5,9 +5,13 @@ signal died
 
 @export var speed: float = 3.0
 @export var stop_distance: float = 1.5
+@export var attack_damage: int = 10
+@export var attack_cooldown: float = 1.0
+@export var health: int = 3
+@export var max_health: int = 3
 
-var health: int = 3
 var is_dead: bool = false
+var attack_timer: float = 0.0
 
 @onready var animation_player: AnimationPlayer = \
 	$CollisionShape3D/bat_model/AnimationPlayer
@@ -15,8 +19,7 @@ var is_dead: bool = false
 @onready var bat_model: Node3D = \
 	$CollisionShape3D/bat_model
 
-@onready var player: Node3D = \
-	get_tree().current_scene.get_node_or_null("Player")
+var player: Node3D = null
 
 @onready var timer: Timer = %Timer
 @onready var ko_sound: AudioStreamPlayer3D = %KOSound
@@ -27,12 +30,7 @@ func _ready() -> void:
 	lock_rotation = true
 	can_sleep = false
 
-	# Stop physical impulses from moving the bat vertically.
-
-
-	if player == null:
-		push_error("Player not found! Check the Player node path.")
-		return
+	_find_player()
 
 	if not animation_player.animation_finished.is_connected(
 		_on_animation_player_animation_finished
@@ -47,9 +45,28 @@ func _ready() -> void:
 	animation_player.play("Idle")
 
 
-func _physics_process(_delta: float) -> void:
-	if player == null or is_dead:
+func _find_player() -> void:
+	if is_instance_valid(player):
 		return
+
+	var candidate = get_tree().get_first_node_in_group("player")
+	if candidate is Node3D:
+		player = candidate
+	elif get_tree().current_scene != null:
+		player = get_tree().current_scene.get_node_or_null("Player")
+
+
+func _physics_process(delta: float) -> void:
+	if not is_instance_valid(player):
+		_find_player()
+		if not is_instance_valid(player):
+			return
+
+	if is_dead:
+		return
+
+	if attack_timer > 0.0:
+		attack_timer -= delta
 
 	var direction: Vector3 = player.global_position - global_position
 	direction.y = 0.0
@@ -59,6 +76,7 @@ func _physics_process(_delta: float) -> void:
 	if distance <= stop_distance:
 		linear_velocity.x = 0.0
 		linear_velocity.z = 0.0
+		_try_attack()
 	else:
 		direction = direction.normalized()
 		linear_velocity.x = direction.x * speed
@@ -79,11 +97,24 @@ func _physics_process(_delta: float) -> void:
 		bat_model.rotate_y(PI)
 
 
-func play_hurt() -> void:
+func _try_attack() -> void:
+	if is_dead or not is_instance_valid(player):
+		return
+
+	if "is_dead" in player and player.is_dead:
+		return
+
+	if attack_timer <= 0.0:
+		attack_timer = attack_cooldown
+		if player.has_method("take_damage"):
+			player.take_damage(attack_damage)
+
+
+func play_hurt(amount: int = 1) -> void:
 	if is_dead or health <= 0:
 		return
 
-	health -= 1
+	health -= amount
 	hurt_sound.play()
 
 	if health <= 0:
@@ -97,7 +128,10 @@ func play_hurt() -> void:
 		linear_velocity = Vector3.ZERO
 		angular_velocity = Vector3.ZERO
 
-		if player != null:
+		if not is_instance_valid(player):
+			_find_player()
+
+		if is_instance_valid(player):
 			var knockback_direction: Vector3 = \
 				global_position - player.global_position
 
