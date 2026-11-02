@@ -23,6 +23,19 @@ var _heal_tween: Tween = null
 @onready var boss_health_bar: ProgressBar = $BossContainer/BossHealthBar
 @onready var boss_health_label: Label = $BossContainer/BossHealthBar/BossHealthLabel
 
+@onready var pause_button: Button = get_node_or_null("PauseButton")
+
+@onready var weapon_container: Control = get_node_or_null("WeaponContainer")
+@onready var weapon_label: Label = get_node_or_null("WeaponContainer/Margin/VBox/WeaponLabel")
+@onready var weapon_sub_label: Label = get_node_or_null("WeaponContainer/Margin/VBox/WeaponSubLabel")
+
+@onready var shield_container: Control = get_node_or_null("ShieldContainer")
+@onready var shield_bar: ProgressBar = get_node_or_null("ShieldContainer/ShieldBar")
+@onready var shield_label: Label = get_node_or_null("ShieldContainer/ShieldBar/ShieldLabel")
+
+@onready var powerup_notification: Label = get_node_or_null("PowerupNotification")
+var _powerup_tween: Tween = null
+
 
 func _ready() -> void:
 	if not is_in_group("hud"):
@@ -31,6 +44,13 @@ func _ready() -> void:
 	wave_cleared_container.visible = false
 	countdown_container.visible = false
 	boss_container.visible = false
+	if shield_container != null:
+		shield_container.visible = false
+	if powerup_notification != null:
+		powerup_notification.visible = false
+
+	if pause_button != null:
+		pause_button.pressed.connect(_on_pause_button_pressed)
 
 	_connect_to_player()
 	_connect_to_wave_manager()
@@ -97,8 +117,103 @@ func _bind_player(player: Node) -> void:
 		if not player.health_changed.is_connected(_on_player_health_changed):
 			player.health_changed.connect(_on_player_health_changed)
 
+	if player.has_signal("weapon_changed"):
+		if not player.weapon_changed.is_connected(_on_player_weapon_changed):
+			player.weapon_changed.connect(_on_player_weapon_changed)
+
+	if player.has_signal("shield_activated"):
+		if not player.shield_activated.is_connected(_on_player_shield_activated):
+			player.shield_activated.connect(_on_player_shield_activated)
+
+	if player.has_signal("shield_updated"):
+		if not player.shield_updated.is_connected(_on_player_shield_updated):
+			player.shield_updated.connect(_on_player_shield_updated)
+
+	if player.has_signal("shield_expired"):
+		if not player.shield_expired.is_connected(_on_player_shield_expired):
+			player.shield_expired.connect(_on_player_shield_expired)
+
 	if "current_health" in player and "max_health" in player:
 		update_health(player.current_health, player.max_health)
+
+	if player.has_method("get_current_weapon_data"):
+		var wdata = player.get_current_weapon_data()
+		update_weapon(wdata["name"], wdata["info"], wdata["icon"])
+
+	if "is_shield_active" in player and player.is_shield_active:
+		var duration = player.shield_duration if "shield_duration" in player else 10.0
+		var remaining = player.shield_time_left if "shield_time_left" in player else duration
+		update_shield(remaining, duration)
+	else:
+		hide_shield()
+
+
+func _on_pause_button_pressed() -> void:
+	if get_node_or_null("/root/GameManager") != null:
+		GameManager.pause_game()
+	else:
+		get_tree().paused = true
+
+
+func _on_player_weapon_changed(_weapon_id: String, weapon_name: String, weapon_info: String, icon: String) -> void:
+	update_weapon(weapon_name, weapon_info, icon)
+	show_powerup_notification("%s %s EQUIPPED!" % [icon, weapon_name.to_upper()])
+
+
+func update_weapon(weapon_name: String, weapon_info: String, icon: String = "🔫") -> void:
+	if weapon_label != null:
+		weapon_label.text = "%s %s" % [icon, weapon_name]
+	if weapon_sub_label != null:
+		weapon_sub_label.text = weapon_info
+
+
+func _on_player_shield_activated(duration: float) -> void:
+	update_shield(duration, duration)
+	show_powerup_notification("🛡️ ENERGY SHIELD ACTIVATED!")
+
+
+func _on_player_shield_updated(time_left: float, max_duration: float) -> void:
+	update_shield(time_left, max_duration)
+
+
+func _on_player_shield_expired() -> void:
+	hide_shield()
+	show_powerup_notification("⚠️ SHIELD EXPIRED")
+
+
+func update_shield(time_left: float, max_duration: float = 10.0) -> void:
+	if shield_container != null:
+		shield_container.visible = true
+	if shield_bar != null:
+		shield_bar.max_value = max_duration
+		shield_bar.value = time_left
+	if shield_label != null:
+		shield_label.text = "🛡️ SHIELD: %.1fs" % maxf(0.0, time_left)
+
+
+func hide_shield() -> void:
+	if shield_container != null:
+		shield_container.visible = false
+
+
+func show_powerup_notification(text: String) -> void:
+	if powerup_notification == null:
+		powerup_notification = get_node_or_null("PowerupNotification")
+	if powerup_notification != null:
+		if _powerup_tween != null and _powerup_tween.is_valid():
+			_powerup_tween.kill()
+
+		powerup_notification.text = text
+		powerup_notification.visible = true
+		powerup_notification.modulate = Color(1, 1, 1, 1)
+
+		_powerup_tween = create_tween()
+		_powerup_tween.tween_interval(1.8)
+		_powerup_tween.tween_property(powerup_notification, "modulate:a", 0.0, 0.5)
+		_powerup_tween.tween_callback(func():
+			if is_instance_valid(powerup_notification):
+				powerup_notification.visible = false
+		)
 
 
 func _bind_wave_manager(wave_mgr: Node) -> void:

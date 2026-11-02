@@ -18,14 +18,13 @@ func _init() -> void:
 	await process_frame
 	await process_frame
 
-	var passed: int = 0
-	var total: int = 0
+	var stats = [0, 0] # [passed, total]
 
 	var check = func(name: String, condition: bool, err_msg: String = ""):
-		total += 1
+		stats[1] += 1
 		if condition:
 			print("  [PASS] " + name)
-			passed += 1
+			stats[0] += 1
 		else:
 			printerr("  [FAIL] " + name + " — " + err_msg)
 
@@ -84,6 +83,7 @@ func _init() -> void:
 		check.call("World/MovingPlatforms transform is identity", moving_platforms.transform == Transform3D.IDENTITY)
 	check.call("World/MovingPlatforms/MovingPlatform1 exists", level.get_node_or_null("World/MovingPlatforms/MovingPlatform1") != null)
 	check.call("World/MovingPlatforms/EastSteppingStone exists", level.get_node_or_null("World/MovingPlatforms/EastSteppingStone") != null)
+	check.call("World/MovingPlatforms/WestBridge_Stepping1 exists", level.get_node_or_null("World/MovingPlatforms/WestBridge_Stepping1") != null)
 
 	var clouds = level.get_node_or_null("World/Clouds")
 	check.call("World/Clouds container exists", clouds != null and clouds is Node3D)
@@ -112,6 +112,9 @@ func _init() -> void:
 	check.call("Gameplay/SpawnPoints container exists", spawn_points != null and spawn_points is Node3D)
 	check.call("Gameplay/SpawnPoints/MobSpawner3D exists", level.get_node_or_null("Gameplay/SpawnPoints/MobSpawner3D") != null)
 	check.call("Gameplay/SpawnPoints/MobSpawner3D2 exists", level.get_node_or_null("Gameplay/SpawnPoints/MobSpawner3D2") != null)
+	check.call("Gameplay/SpawnPoints/MobSpawner3D_East exists", level.get_node_or_null("Gameplay/SpawnPoints/MobSpawner3D_East") != null)
+	check.call("Gameplay/SpawnPoints/MobSpawner3D_North exists", level.get_node_or_null("Gameplay/SpawnPoints/MobSpawner3D_North") != null)
+	check.call("Gameplay/SpawnPoints/MobSpawner3D_South exists", level.get_node_or_null("Gameplay/SpawnPoints/MobSpawner3D_South") != null)
 
 	var collectibles = level.get_node_or_null("Gameplay/Collectibles")
 	check.call("Gameplay/Collectibles container exists", collectibles != null and collectibles is Node3D)
@@ -126,22 +129,25 @@ func _init() -> void:
 	check.call("UI container exists", ui != null and ui is Node)
 	check.call("UI/HUD exists", level.get_node_or_null("UI/HUD") != null)
 	check.call("UI/UpgradeModal exists", level.get_node_or_null("UI/UpgradeModal") != null)
+	check.call("UI/PauseModal exists", level.get_node_or_null("UI/PauseModal") != null)
 	check.call("UI/GameOverModal exists", level.get_node_or_null("UI/GameOverModal") != null)
 	check.call("UI/HomeUI exists", level.get_node_or_null("UI/HomeUI") != null)
 	check.call("UI/MobileUI exists", level.get_node_or_null("UI/MobileUI") != null)
 
 	# 5. Check spawner discovery by EnemyManager
 	print("\n--- Verifying Spawner & Manager Integration ---")
+	if enemy_mgr != null:
+		enemy_mgr.refresh_spawners()
 	var spawner_count = enemy_mgr.spawners.size() if enemy_mgr != null else 0
-	check.call("EnemyManager registered spawners from Gameplay/SpawnPoints", spawner_count >= 5, "Found: " + str(spawner_count))
+	check.call("EnemyManager registered all 5 spawners", spawner_count == 5, "Found: " + str(spawner_count))
 
 	print("\n==================================================")
-	print("RESULTS: " + str(passed) + " / " + str(total) + " checks passed.")
+	print("RESULTS: " + str(stats[0]) + " / " + str(stats[1]) + " checks passed.")
 	print("==================================================")
 
-	if passed == total:
+	if stats[0] == stats[1]:
 		print("SUCCESS: Scene hierarchy refactoring 100% verified!")
 		quit(0)
 	else:
-		printerr("FAILURE: " + str(total - passed) + " checks failed.")
+		printerr("FAILURE: " + str(stats[1] - stats[0]) + " checks failed.")
 		quit(1)

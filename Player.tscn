@@ -7,6 +7,17 @@
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_uvm4r"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_shield"]
+transparency = 1
+cull_mode = 2
+albedo_color = Color(0.2, 0.8, 1, 0.3)
+emission_enabled = true
+emission = Color(0.15, 0.75, 1, 1)
+emission_energy_multiplier = 2.0
+rim_enabled = true
+rim = 0.8
+rim_tint = 0.5
+
 [node name="Player" type="CharacterBody3D" unique_id=1291102696 groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.008326858, 0)
 collision_mask = 3
@@ -52,3 +63,11 @@ one_shot = true
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=359443708]
 unique_name_in_owner = true
 stream = ExtResource("4_e80uo")
+
+[node name="ShieldSphere" type="CSGSphere3D" parent="." unique_id=987654321]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+visible = false
+radius = 1.35
+radial_segments = 24
+rings = 16
+material = SubResource("StandardMaterial3D_shield")

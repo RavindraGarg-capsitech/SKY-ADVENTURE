@@ -20,6 +20,8 @@ var permanent_upgrades: Dictionary = {
 var master_volume: float = 1.0
 var music_volume: float = 0.8
 var sfx_volume: float = 1.0
+var mouse_sensitivity: float = 1.0
+var mobile_sensitivity: float = 1.0
 
 
 func _ready() -> void:
@@ -62,6 +64,10 @@ func load_game() -> void:
 		music_volume = float(data["music_volume"])
 	if data.has("sfx_volume"):
 		sfx_volume = float(data["sfx_volume"])
+	if data.has("mouse_sensitivity"):
+		mouse_sensitivity = float(data["mouse_sensitivity"])
+	if data.has("mobile_sensitivity"):
+		mobile_sensitivity = float(data["mobile_sensitivity"])
 
 	data_loaded.emit()
 
@@ -80,7 +86,9 @@ func save_game() -> void:
 		"permanent_upgrades": permanent_upgrades,
 		"master_volume": master_volume,
 		"music_volume": music_volume,
-		"sfx_volume": sfx_volume
+		"sfx_volume": sfx_volume,
+		"mouse_sensitivity": mouse_sensitivity,
+		"mobile_sensitivity": mobile_sensitivity
 	}
 
 	var json_string: String = JSON.stringify(data, "\t")
@@ -115,4 +123,6 @@ func reset_save_data() -> void:
 		"bonus_damage": 0,
 		"bonus_magnet": 0
 	}
+	mouse_sensitivity = 1.0
+	mobile_sensitivity = 1.0
 	save_game()

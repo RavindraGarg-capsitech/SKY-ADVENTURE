@@ -101,7 +101,10 @@ func _handle_screen_drag(event: InputEventScreenDrag) -> void:
 			_find_player()
 
 		if is_instance_valid(player_node) and player_node.has_method("_rotate_camera"):
-			player_node._rotate_camera(event.relative * 0.4)
+			var mob_sens: float = 1.0
+			if get_node_or_null("/root/SaveManager") != null:
+				mob_sens = SaveManager.mobile_sensitivity
+			player_node._rotate_camera(event.relative * 0.4 * mob_sens)
 
 
 func _apply_movement_input(vec: Vector2) -> void:

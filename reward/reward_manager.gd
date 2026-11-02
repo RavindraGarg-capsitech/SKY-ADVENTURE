@@ -10,6 +10,7 @@ var xp: int = 0
 
 const COIN_PICKUP_SCENE = preload("res://reward/coin_pickup.tscn")
 const HEALTH_PICKUP_SCENE = preload("res://reward/health_pickup.tscn")
+const SHIELD_PICKUP_SCENE = preload("res://reward/shield_pickup.tscn")
 
 
 func _ready() -> void:
@@ -73,6 +74,9 @@ func _on_enemy_died(mob: Node3D, death_position: Vector3) -> void:
 			var offset = Vector3(randf_range(-1.5, 1.5), 0.0, randf_range(-1.5, 1.5))
 			var safe_pos = _find_safe_ground_position(raw_pos + offset)
 			_spawn_pickup(HEALTH_PICKUP_SCENE, safe_pos)
+		# Guaranteed Shield Pickup from Boss
+		var shield_pos = _find_safe_ground_position(raw_pos + Vector3(randf_range(-1.0, 1.0), 0, randf_range(-1.0, 1.0)))
+		_spawn_pickup(SHIELD_PICKUP_SCENE, shield_pos)
 	else:
 		add_xp(10)
 		# Guaranteed coin drop
@@ -83,6 +87,13 @@ func _on_enemy_died(mob: Node3D, death_position: Vector3) -> void:
 		if randf() < 0.25:
 			var hp_pos = _find_safe_ground_position(raw_pos + Vector3(randf_range(-0.5, 0.5), 0, randf_range(-0.5, 0.5)))
 			_spawn_pickup(HEALTH_PICKUP_SCENE, hp_pos)
+
+		# Wave 5+ chance for Energy Shield pickup drop (15% chance)
+		var wm = get_tree().get_first_node_in_group("wave_manager")
+		var wave_num = wm.current_wave if wm != null and "current_wave" in wm else 1
+		if wave_num >= 5 and randf() < 0.15:
+			var shld_pos = _find_safe_ground_position(raw_pos + Vector3(randf_range(-0.8, 0.8), 0, randf_range(-0.8, 0.8)))
+			_spawn_pickup(SHIELD_PICKUP_SCENE, shld_pos)
 
 
 ## Finds a valid, walkable island surface directly below target_pos, or clamps safely near the player.

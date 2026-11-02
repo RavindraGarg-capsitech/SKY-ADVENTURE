@@ -27,6 +27,7 @@ func _ready() -> void:
 	if not is_in_group("enemy_manager"):
 		add_to_group("enemy_manager")
 	refresh_spawners()
+	call_deferred("refresh_spawners")
 
 
 func refresh_spawners() -> void:
@@ -35,6 +36,14 @@ func refresh_spawners() -> void:
 	for node in spawner_nodes:
 		if node is Node3D and node.has_method("spawn_mob"):
 			spawners.append(node)
+	if spawners.is_empty():
+		var scene_root = get_tree().current_scene
+		if scene_root != null:
+			var sp_container = scene_root.get_node_or_null("Gameplay/SpawnPoints")
+			if sp_container != null:
+				for child in sp_container.get_children():
+					if child is Node3D and child.has_method("spawn_mob"):
+						spawners.append(child)
 
 
 func _physics_process(delta: float) -> void:

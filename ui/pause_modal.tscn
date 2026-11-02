@@ -1,0 +1,258 @@
+[gd_scene format=3 uid="uid://b8yqud7vspm01"]
+
+[ext_resource type="Script" path="res://ui/pause_modal.gd" id="1_pause_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.08, 0.1, 0.15, 0.96)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.25, 0.65, 0.95, 0.9)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 24
+shadow_color = Color(0, 0, 0, 0.85)
+
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font_size = 38
+font_color = Color(0.35, 0.8, 1, 1)
+outline_size = 8
+outline_color = Color(0, 0, 0, 0.95)
+
+[sub_resource type="LabelSettings" id="LabelSettings_sub"]
+font_size = 16
+font_color = Color(0.75, 0.85, 0.95, 0.85)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_resume"]
+bg_color = Color(0.18, 0.65, 0.35, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+bg_color = Color(0.2, 0.35, 0.55, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_menu"]
+bg_color = Color(0.28, 0.28, 0.34, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="LabelSettings" id="LabelSettings_setting_label"]
+font_size = 18
+font_color = Color(0.9, 0.95, 1, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_setting_val"]
+font_size = 18
+font_color = Color(1, 0.85, 0.2, 1)
+
+[node name="PauseModal" type="CanvasLayer"]
+process_mode = 3
+layer = 25
+script = ExtResource("1_pause_script")
+
+[node name="ModalPanel" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dimmer" type="ColorRect" parent="ModalPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.06, 0.1, 0.82)
+
+[node name="Center" type="CenterContainer" parent="ModalPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Card" type="PanelContainer" parent="ModalPanel/Center"]
+custom_minimum_size = Vector2(560, 480)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Margin" type="MarginContainer" parent="ModalPanel/Center/Card"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 28
+
+[node name="VBox" type="VBoxContainer" parent="ModalPanel/Center/Card/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="TitleBox" type="VBoxContainer" parent="ModalPanel/Center/Card/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="Title" type="Label" parent="ModalPanel/Center/Card/Margin/VBox/TitleBox"]
+layout_mode = 2
+text = "EXPEDITION PAUSED"
+label_settings = SubResource("LabelSettings_title")
+horizontal_alignment = 1
+
+[node name="SubTitle" type="Label" parent="ModalPanel/Center/Card/Margin/VBox/TitleBox"]
+layout_mode = 2
+text = "SKY ADVENTURE • FLOATING ISLANDS"
+label_settings = SubResource("LabelSettings_sub")
+horizontal_alignment = 1
+
+[node name="MainContainer" type="VBoxContainer" parent="ModalPanel/Center/Card/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="ResumeButton" type="Button" parent="ModalPanel/Center/Card/Margin/VBox/MainContainer"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_resume")
+text = "▶  RESUME EXPEDITION"
+
+[node name="RestartButton" type="Button" parent="ModalPanel/Center/Card/Margin/VBox/MainContainer"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+text = "↺  RESTART RUN"
+
+[node name="SettingsButton" type="Button" parent="ModalPanel/Center/Card/Margin/VBox/MainContainer"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+text = "⚙  SETTINGS"
+
+[node name="MainMenuButton" type="Button" parent="ModalPanel/Center/Card/Margin/VBox/MainContainer"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_menu")
+text = "⌂  MAIN MENU"
+
+[node name="SettingsContainer" type="VBoxContainer" parent="ModalPanel/Center/Card/Margin/VBox"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="MusicRow" type="HBoxContainer" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/MusicRow"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "Music Volume"
+label_settings = SubResource("LabelSettings_setting_label")
+
+[node name="MusicSlider" type="HSlider" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/MusicRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+value = 80.0
+
+[node name="ValLabel" type="Label" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/MusicRow"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "80%"
+label_settings = SubResource("LabelSettings_setting_val")
+horizontal_alignment = 2
+
+[node name="SFXRow" type="HBoxContainer" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/SFXRow"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "SFX Volume"
+label_settings = SubResource("LabelSettings_setting_label")
+
+[node name="SFXSlider" type="HSlider" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/SFXRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+value = 100.0
+
+[node name="ValLabel" type="Label" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/SFXRow"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "100%"
+label_settings = SubResource("LabelSettings_setting_val")
+horizontal_alignment = 2
+
+[node name="MouseRow" type="HBoxContainer" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/MouseRow"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "Mouse Sensitivity"
+label_settings = SubResource("LabelSettings_setting_label")
+
+[node name="MouseSlider" type="HSlider" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/MouseRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.2
+max_value = 2.5
+step = 0.1
+value = 1.0
+
+[node name="ValLabel" type="Label" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/MouseRow"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "1.0x"
+label_settings = SubResource("LabelSettings_setting_val")
+horizontal_alignment = 2
+
+[node name="MobileRow" type="HBoxContainer" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/MobileRow"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "Touch Sensitivity"
+label_settings = SubResource("LabelSettings_setting_label")
+
+[node name="MobileSlider" type="HSlider" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/MobileRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.2
+max_value = 2.5
+step = 0.1
+value = 1.0
+
+[node name="ValLabel" type="Label" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/MobileRow"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "1.0x"
+label_settings = SubResource("LabelSettings_setting_val")
+horizontal_alignment = 2
+
+[node name="BackButton" type="Button" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_menu")
+text = "←  BACK TO PAUSE MENU"

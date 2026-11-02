@@ -82,6 +82,59 @@ font_color = Color(0.2, 1, 0.4, 1)
 outline_size = 5
 outline_color = Color(0, 0, 0, 0.95)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pause_btn"]
+bg_color = Color(0.12, 0.16, 0.24, 0.85)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.75, 1, 0.85)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_weapon_panel"]
+bg_color = Color(0.1, 0.12, 0.18, 0.82)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.5, 0.8, 0.7)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_weapon_name"]
+font_size = 18
+font_color = Color(1, 0.88, 0.2, 1)
+outline_size = 4
+outline_color = Color(0, 0, 0, 0.9)
+
+[sub_resource type="LabelSettings" id="LabelSettings_weapon_sub"]
+font_size = 13
+font_color = Color(0.75, 0.85, 0.95, 0.8)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shield_fill"]
+bg_color = Color(0.15, 0.8, 1, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_shield_text"]
+font_size = 16
+font_color = Color(1, 1, 1, 1)
+outline_size = 5
+outline_color = Color(0, 0.2, 0.4, 0.95)
+
+[sub_resource type="LabelSettings" id="LabelSettings_powerup_notif"]
+font_size = 22
+font_color = Color(0.2, 0.9, 1, 1)
+outline_size = 6
+outline_color = Color(0, 0, 0, 0.95)
+
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud01")
 
@@ -131,13 +184,90 @@ grow_vertical = 0
 text = "+25 HP Recovered!"
 label_settings = SubResource("LabelSettings_heal")
 
+[node name="WeaponContainer" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 96.0
+offset_right = 380.0
+offset_bottom = 152.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_weapon_panel")
+
+[node name="Margin" type="MarginContainer" parent="WeaponContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 6
+
+[node name="VBox" type="VBoxContainer" parent="WeaponContainer/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="WeaponLabel" type="Label" parent="WeaponContainer/Margin/VBox"]
+layout_mode = 2
+text = "WEAPON: Standard Blaster"
+label_settings = SubResource("LabelSettings_weapon_name")
+
+[node name="WeaponSubLabel" type="Label" parent="WeaponContainer/Margin/VBox"]
+layout_mode = 2
+text = "1x DMG • Semi-Auto • Keys [1-5] / [Q] to switch"
+label_settings = SubResource("LabelSettings_weapon_sub")
+
+[node name="ShieldContainer" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_left = 40.0
+offset_top = 160.0
+offset_right = 380.0
+offset_bottom = 196.0
+
+[node name="ShieldBar" type="ProgressBar" parent="ShieldContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_shield_fill")
+value = 100.0
+show_percentage = false
+
+[node name="ShieldLabel" type="Label" parent="ShieldContainer/ShieldBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "🛡️ SHIELD: 10.0s"
+label_settings = SubResource("LabelSettings_shield_text")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PowerupNotification" type="Label" parent="."]
+visible = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -250.0
+offset_top = 110.0
+offset_right = 250.0
+offset_bottom = 150.0
+grow_horizontal = 2
+text = "⚡ PLASMA GUN EQUIPPED!"
+label_settings = SubResource("LabelSettings_powerup_notif")
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="WaveContainer" type="VBoxContainer" parent="."]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -340.0
+offset_left = -390.0
 offset_top = 40.0
-offset_right = -40.0
+offset_right = -100.0
 offset_bottom = 180.0
 grow_horizontal = 0
 theme_override_constants/separation = 4
@@ -166,6 +296,19 @@ layout_mode = 2
 text = "Score: 0"
 label_settings = SubResource("LabelSettings_score")
 horizontal_alignment = 2
+
+[node name="PauseButton" type="Button" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -84.0
+offset_top = 38.0
+offset_right = -36.0
+offset_bottom = 86.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_pause_btn")
+text = "⏸"
 
 [node name="WaveClearedContainer" type="Control" parent="."]
 visible = false

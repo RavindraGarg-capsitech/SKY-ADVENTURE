@@ -28,6 +28,7 @@
 [ext_resource type="PackedScene" uid="uid://bo88i2iicoa8w" path="res://level/environment/props/prop_island_background.tscn" id="28_islandbg"]
 [ext_resource type="PackedScene" uid="uid://8a45r08wiyqi" path="res://level/environment/props/prop_bridge_wood.tscn" id="29_bridgewood"]
 [ext_resource type="PackedScene" uid="uid://c7coinpkuqam1" path="res://reward/coin_pickup.tscn" id="30_coin"]
+[ext_resource type="PackedScene" uid="uid://b8yqud7vspm01" path="res://ui/pause_modal.tscn" id="31_pausemodal"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_adventure"]
 sky_top_color = Color(0.2, 0.52, 0.88, 1)
@@ -418,7 +419,13 @@ label_settings = SubResource("LabelSettings_legacy")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9244709, 1.4261814, -26.150623)
 
 [node name="MobSpawner3D_East" parent="Gameplay/SpawnPoints" unique_id=271100841 instance=ExtResource("3_gmctb")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.133133, 0.88, 29.875242)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0.88, 25.28)
+
+[node name="MobSpawner3D_North" parent="Gameplay/SpawnPoints" unique_id=271100842 instance=ExtResource("3_gmctb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28, 0.88, 17)
+
+[node name="MobSpawner3D_South" parent="Gameplay/SpawnPoints" unique_id=271100843 instance=ExtResource("3_gmctb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28, 0.88, 33.5)
 
 [node name="Collectibles" type="Node3D" parent="Gameplay" unique_id=900330001]
 
@@ -445,6 +452,8 @@ shape = SubResource("WorldBoundaryShape3D_killplane")
 [node name="HUD" parent="UI" unique_id=741029851 instance=ExtResource("6_hud01")]
 
 [node name="UpgradeModal" parent="UI" unique_id=712458905 instance=ExtResource("10_upgmodal")]
+
+[node name="PauseModal" parent="UI" unique_id=912458907 instance=ExtResource("31_pausemodal")]
 
 [node name="GameOverModal" parent="UI" unique_id=812458906 instance=ExtResource("13_gameover")]
 

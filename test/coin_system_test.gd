@@ -49,9 +49,15 @@ func _run_tests() -> void:
 	# 2. Check pre-placed path coins
 	print("\n[TEST 2] Verifying pre-placed path coins on bridges & islands...")
 	var path_coins = []
-	for child in level.get_children():
-		if child.is_in_group("coins"):
-			path_coins.append(child)
+	var collectibles = level.get_node_or_null("Gameplay/Collectibles")
+	if collectibles != null:
+		for child in collectibles.get_children():
+			if child.is_in_group("coins"):
+				path_coins.append(child)
+	if path_coins.is_empty():
+		for child in level.get_children():
+			if child.is_in_group("coins"):
+				path_coins.append(child)
 
 	assert(path_coins.size() >= 4, "Expected at least 4 pre-placed path coins, found: %d" % path_coins.size())
 	for c in path_coins:
