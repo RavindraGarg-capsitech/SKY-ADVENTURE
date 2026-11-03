@@ -7,6 +7,9 @@
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_uvm4r"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_gun_barrier"]
+size = Vector3(0.65, 0.45, 0.85)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_shield"]
 transparency = 1
 cull_mode = 2
@@ -20,6 +23,7 @@ rim_tint = 0.5
 
 [node name="Player" type="CharacterBody3D" unique_id=1291102696 groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.008326858, 0)
+collision_layer = 1
 collision_mask = 3
 script = ExtResource("1_kpjcp")
 
@@ -30,6 +34,10 @@ shape = SubResource("CapsuleShape3D_uvm4r")
 [node name="Camera3D" type="Camera3D" parent="." unique_id=881616886]
 unique_name_in_owner = true
 transform = Transform3D(0.9978982, 0, -0.06480109, 0, 1, 0, 0.06480109, 0, 0.9978982, 0, 1.4955567, -0.0059890747)
+
+[node name="GunBarrier" type="CollisionShape3D" parent="Camera3D" unique_id=1622314192]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, -0.1, -0.9)
+shape = SubResource("BoxShape3D_gun_barrier")
 
 [node name="gun_model" parent="Camera3D" unique_id=790984775 instance=ExtResource("1_xhfnw")]
 transform = Transform3D(-0.88388234, 0, -0.12698212, 0, 0.99829155, 0, 0.11322803, 0, -0.9912498, 0.63166964, -0.09502089, -1.023472)

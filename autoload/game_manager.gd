@@ -29,6 +29,16 @@ func _ready() -> void:
 		_bind_player(player)
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_PAUSED:
+		# Mobile backgrounding: pause active gameplay and flush save data
+		if is_playing():
+			pause_game()
+		var sm = get_node_or_null("/root/SaveManager")
+		if sm != null and sm.has_method("save_game"):
+			sm.save_game()
+
+
 func _on_node_added(node: Node) -> void:
 	if node.is_in_group("player"):
 		_bind_player(node)

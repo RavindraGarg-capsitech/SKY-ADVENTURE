@@ -25,6 +25,9 @@ signal game_restarted
 @onready var mouse_val_label: Label = $ModalPanel/Center/Card/Margin/VBox/SettingsContainer/MouseRow/ValLabel
 @onready var mobile_slider: HSlider = $ModalPanel/Center/Card/Margin/VBox/SettingsContainer/MobileRow/MobileSlider
 @onready var mobile_val_label: Label = $ModalPanel/Center/Card/Margin/VBox/SettingsContainer/MobileRow/ValLabel
+@onready var low_quality_btn: Button = get_node_or_null("ModalPanel/Center/Card/Margin/VBox/SettingsContainer/QualityRow/QualityButtons/LowButton")
+@onready var med_quality_btn: Button = get_node_or_null("ModalPanel/Center/Card/Margin/VBox/SettingsContainer/QualityRow/QualityButtons/MedButton")
+@onready var high_quality_btn: Button = get_node_or_null("ModalPanel/Center/Card/Margin/VBox/SettingsContainer/QualityRow/QualityButtons/HighButton")
 @onready var settings_back_button: Button = $ModalPanel/Center/Card/Margin/VBox/SettingsContainer/BackButton
 
 
@@ -56,6 +59,18 @@ func _ready() -> void:
 		mobile_slider.value_changed.connect(_on_mobile_slider_changed)
 	if settings_back_button != null:
 		settings_back_button.pressed.connect(_on_settings_back_pressed)
+
+	if low_quality_btn != null:
+		low_quality_btn.pressed.connect(func(): _set_graphics_quality("low"))
+	if med_quality_btn != null:
+		med_quality_btn.pressed.connect(func(): _set_graphics_quality("medium"))
+	if high_quality_btn != null:
+		high_quality_btn.pressed.connect(func(): _set_graphics_quality("high"))
+
+	var gm = get_node_or_null("/root/GraphicsManager")
+	if gm != null:
+		gm.quality_changed.connect(_on_quality_changed)
+		_update_quality_buttons(gm.current_quality)
 
 	_sync_settings_from_save()
 
@@ -208,3 +223,25 @@ func _on_mobile_slider_changed(val: float) -> void:
 	if get_node_or_null("/root/SaveManager") != null:
 		SaveManager.mobile_sensitivity = val
 		SaveManager.save_game()
+
+
+func _set_graphics_quality(quality: String) -> void:
+	var gm = get_node_or_null("/root/GraphicsManager")
+	if gm != null and gm.has_method("set_quality"):
+		gm.set_quality(quality)
+	_update_quality_buttons(quality)
+
+
+func _on_quality_changed(new_qual: String) -> void:
+	_update_quality_buttons(new_qual)
+
+
+func _update_quality_buttons(current_qual: String) -> void:
+	var active_color = Color(0.3, 0.8, 1.0, 1.0)
+	var normal_color = Color(0.7, 0.7, 0.7, 1.0)
+	if low_quality_btn != null:
+		low_quality_btn.modulate = active_color if current_qual == "low" else normal_color
+	if med_quality_btn != null:
+		med_quality_btn.modulate = active_color if current_qual == "medium" else normal_color
+	if high_quality_btn != null:
+		high_quality_btn.modulate = active_color if current_qual == "high" else normal_color

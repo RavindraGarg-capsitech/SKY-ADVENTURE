@@ -52,9 +52,38 @@ func _ready() -> void:
 	if pause_button != null:
 		pause_button.pressed.connect(_on_pause_button_pressed)
 
+	_apply_safe_area()
 	_connect_to_player()
 	_connect_to_wave_manager()
 	_connect_to_reward_manager()
+
+
+func _apply_safe_area() -> void:
+	var safe_area = DisplayServer.get_display_safe_area()
+	var win_size = DisplayServer.window_get_size()
+	if win_size.x <= 0 or win_size.y <= 0 or safe_area.size.x <= 0:
+		return
+
+	var left_pad = float(safe_area.position.x)
+	var right_pad = float(win_size.x - (safe_area.position.x + safe_area.size.x))
+	var top_pad = float(safe_area.position.y)
+
+	var health_c = get_node_or_null("HealthContainer")
+	if health_c != null and (left_pad > 0 or top_pad > 0):
+		health_c.position.x += left_pad
+		health_c.position.y += top_pad
+
+	if weapon_container != null and (left_pad > 0 or top_pad > 0):
+		weapon_container.position.x += left_pad
+		weapon_container.position.y += top_pad
+
+	if shield_container != null and (left_pad > 0 or top_pad > 0):
+		shield_container.position.x += left_pad
+		shield_container.position.y += top_pad
+
+	if pause_button != null and (right_pad > 0 or top_pad > 0):
+		pause_button.position.x -= right_pad
+		pause_button.position.y += top_pad
 
 
 func _connect_to_player() -> void:

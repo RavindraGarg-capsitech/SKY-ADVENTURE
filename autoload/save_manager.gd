@@ -22,6 +22,7 @@ var music_volume: float = 0.8
 var sfx_volume: float = 1.0
 var mouse_sensitivity: float = 1.0
 var mobile_sensitivity: float = 1.0
+var graphics_quality: String = ""
 
 
 func _ready() -> void:
@@ -68,6 +69,8 @@ func load_game() -> void:
 		mouse_sensitivity = float(data["mouse_sensitivity"])
 	if data.has("mobile_sensitivity"):
 		mobile_sensitivity = float(data["mobile_sensitivity"])
+	if data.has("graphics_quality"):
+		graphics_quality = str(data["graphics_quality"])
 
 	data_loaded.emit()
 
@@ -88,7 +91,8 @@ func save_game() -> void:
 		"music_volume": music_volume,
 		"sfx_volume": sfx_volume,
 		"mouse_sensitivity": mouse_sensitivity,
-		"mobile_sensitivity": mobile_sensitivity
+		"mobile_sensitivity": mobile_sensitivity,
+		"graphics_quality": graphics_quality
 	}
 
 	var json_string: String = JSON.stringify(data, "\t")

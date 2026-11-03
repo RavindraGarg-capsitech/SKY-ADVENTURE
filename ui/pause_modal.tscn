@@ -250,6 +250,35 @@ text = "1.0x"
 label_settings = SubResource("LabelSettings_setting_val")
 horizontal_alignment = 2
 
+[node name="QualityRow" type="HBoxContainer" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/QualityRow"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "Graphics Quality"
+label_settings = SubResource("LabelSettings_setting_label")
+
+[node name="QualityButtons" type="HBoxContainer" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/QualityRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="LowButton" type="Button" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/QualityRow/QualityButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "LOW"
+
+[node name="MedButton" type="Button" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/QualityRow/QualityButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MED"
+
+[node name="HighButton" type="Button" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer/QualityRow/QualityButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "HIGH"
+
 [node name="BackButton" type="Button" parent="ModalPanel/Center/Card/Margin/VBox/SettingsContainer"]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2

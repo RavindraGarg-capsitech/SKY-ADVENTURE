@@ -13,6 +13,7 @@ config_version=5
 config/name="NEW 3 D game"
 run/main_scene="uid://dp7sxe5xl5shk"
 config/features=PackedStringArray("4.7", "GL Compatibility")
+run/max_fps=60
 config/icon="res://icon.svg"
 
 [autoload]
@@ -20,6 +21,8 @@ config/icon="res://icon.svg"
 SaveManager="*res://autoload/save_manager.gd"
 AudioManager="*res://autoload/audio_manager.gd"
 GameManager="*res://autoload/game_manager.gd"
+GraphicsManager="*res://autoload/graphics_manager.gd"
+PoolManager="*res://autoload/pool_manager.gd"
 
 [display]
 
@@ -68,6 +71,7 @@ shoot={
 [input_devices]
 
 sensors/enable_gyroscope=true
+pointing/emulate_touch_from_mouse=true
 
 [physics]
 

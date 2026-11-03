@@ -121,8 +121,9 @@ func _ready() -> void:
 	current_health = max_health
 	health_changed.emit(current_health, max_health)
 
-	if get_node_or_null("/root/SaveManager") != null:
-		mouse_sensitivity_factor = SaveManager.mouse_sensitivity
+	var sm = get_node_or_null("/root/SaveManager")
+	if sm != null and "mouse_sensitivity" in sm:
+		mouse_sensitivity_factor = sm.mouse_sensitivity
 
 	if shield_sphere == null:
 		shield_sphere = get_node_or_null("ShieldSphere")
@@ -334,21 +335,25 @@ func shoot_bullet() -> void:
 	var p_color = wdata.get("color", Color.ORANGE)
 	var impact_type = String(wdata.get("impact", "default"))
 
+	var pm = get_node_or_null("/root/PoolManager")
 	for angle in angles:
-		var new_bullet: Node3D = BULLET_3D.instantiate() as Node3D
-		get_tree().current_scene.add_child(new_bullet)
-		new_bullet.global_position = muzzle_pos
-
 		var rotated_basis: Basis = muzzle_basis.rotated(muzzle_basis.y, angle)
-		new_bullet.global_basis = rotated_basis
+		var new_bullet: Node3D = null
 
-		if new_bullet.has_method("configure_projectile"):
-			new_bullet.configure_projectile(final_damage, final_range, final_speed, p_scale, p_color, impact_type)
+		if pm != null and pm.has_method("spawn_bullet"):
+			new_bullet = pm.spawn_bullet(muzzle_pos, rotated_basis, final_damage, final_range, final_speed, p_scale, p_color, impact_type)
 		else:
-			if "damage" in new_bullet:
-				new_bullet.damage = final_damage
-			if "RANGE" in new_bullet:
-				new_bullet.RANGE = final_range
+			new_bullet = BULLET_3D.instantiate() as Node3D
+			get_tree().current_scene.add_child(new_bullet)
+			new_bullet.global_position = muzzle_pos
+			new_bullet.global_basis = rotated_basis
+			if new_bullet.has_method("configure_projectile"):
+				new_bullet.configure_projectile(final_damage, final_range, final_speed, p_scale, p_color, impact_type)
+			else:
+				if "damage" in new_bullet:
+					new_bullet.damage = final_damage
+				if "RANGE" in new_bullet:
+					new_bullet.RANGE = final_range
 
 	var cooldown_factor = shoot_cooldown / 0.20
 	var final_cooldown = maxf(0.04, float(wdata.get("cooldown", 0.20)) * cooldown_factor)
@@ -414,8 +419,9 @@ func die() -> void:
 	var wm = get_tree().get_first_node_in_group("wave_manager")
 	var coins = rm.coins if rm != null and "coins" in rm else 0
 	var wave = wm.current_wave if wm != null and "current_wave" in wm else 1
-	if get_node_or_null("/root/SaveManager") != null:
-		SaveManager.bank_run_results(wave, coins, coins * 10)
+	var sm_death = get_node_or_null("/root/SaveManager")
+	if sm_death != null and sm_death.has_method("bank_run_results"):
+		sm_death.bank_run_results(wave, coins, coins * 10)
 
 	if wm != null and wm.has_method("abort_wave_transition"):
 		wm.abort_wave_transition()
@@ -428,8 +434,9 @@ func die() -> void:
 	if hud != null and hud.has_method("hide_all_banners"):
 		hud.hide_all_banners()
 
-	if get_node_or_null("/root/GameManager") != null:
-		GameManager.change_state(GameManager.GameState.GAME_OVER)
+	var gm = get_node_or_null("/root/GameManager")
+	if gm != null and gm.has_method("change_state"):
+		gm.change_state(gm.GameState.GAME_OVER)
 	else:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 

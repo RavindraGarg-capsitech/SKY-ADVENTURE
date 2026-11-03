@@ -40,11 +40,14 @@ func increase_score() -> void:
 
 
 func do_poof(mob_global_position: Vector3) -> void:
-	const SMOKE_PUFF = preload("uid://cjk3frr43yesb")
-
-	var poof = SMOKE_PUFF.instantiate()
-	add_child(poof)
-	poof.global_position = mob_global_position
+	var pm = get_node_or_null("/root/PoolManager")
+	if pm != null and pm.has_method("spawn_poof"):
+		pm.spawn_poof(mob_global_position, 1.0)
+	else:
+		const SMOKE_PUFF = preload("uid://cjk3frr43yesb")
+		var poof = SMOKE_PUFF.instantiate()
+		add_child(poof)
+		poof.global_position = mob_global_position
 
 
 func update_score() -> void:

@@ -4,7 +4,7 @@ extends RigidBody3D
 signal died
 
 @export var speed: float = 3.0
-@export var stop_distance: float = 1.5
+@export var stop_distance: float = 2.4
 @export var attack_damage: int = 10
 @export var attack_cooldown: float = 1.0
 @export var health: int = 3
@@ -108,22 +108,59 @@ func _physics_process(delta: float) -> void:
 	if attack_timer > 0.0:
 		attack_timer -= delta
 
-	var direction: Vector3 = player.global_position - global_position
+	var player_base_pos: Vector3 = player.global_position
+	var gun_pos: Vector3 = player_base_pos + Vector3.UP * 1.5
+	if player.has_node("Camera3D"):
+		gun_pos = player.get_node("Camera3D").global_position
+
+	var direction: Vector3 = player_base_pos - global_position
 	direction.y = 0.0
 
 	var distance: float = direction.length()
+	var dist_to_gun: float = (global_position - gun_pos).length()
 
-	if distance <= stop_distance:
+	# Safe approach boundary: never enter the gun or camera volume (stay >= 2.2m from gun and >= stop_distance from player body)
+	if distance <= stop_distance or dist_to_gun <= 2.2:
 		linear_velocity.x = 0.0
 		linear_velocity.z = 0.0
 		_try_attack()
 	else:
 		direction = direction.normalized()
+
+		# Obstacle avoidance: cast raycast forward to steer around trees, rocks, and buildings
+		var current_scene = get_tree().current_scene
+		if current_scene is Node3D and current_scene.get_world_3d() != null:
+			var space_state = current_scene.get_world_3d().direct_space_state
+			var ray_query = PhysicsRayQueryParameters3D.create(
+				global_position,
+				global_position + direction * 1.8,
+				1 # Layer 1 = Environment
+			)
+			var obstacle = space_state.intersect_ray(ray_query)
+			if not obstacle.is_empty():
+				var normal: Vector3 = obstacle.normal
+				normal.y = 0.0
+				if normal.length_squared() > 0.01:
+					direction = (direction + normal.normalized() * 1.5).normalized()
+
 		linear_velocity.x = direction.x * speed
 		linear_velocity.z = direction.z * speed
-	# Prevent upward movement while allowing horizontal collision.
-	if linear_velocity.y > 0.0:
-		linear_velocity.y = 0.0
+
+	# Smooth vertical hovering above ground (maintains natural 1.5m flying height across bridges & platforms)
+	var current_scene_ref = get_tree().current_scene
+	if current_scene_ref is Node3D and current_scene_ref.get_world_3d() != null:
+		var space_state = current_scene_ref.get_world_3d().direct_space_state
+		var ground_ray = PhysicsRayQueryParameters3D.create(
+			Vector3(global_position.x, global_position.y + 0.5, global_position.z),
+			Vector3(global_position.x, global_position.y - 4.0, global_position.z),
+			1 # Layer 1 = Environment
+		)
+		var ground_hit = space_state.intersect_ray(ground_ray)
+		if not ground_hit.is_empty():
+			var target_hover_y: float = ground_hit.position.y + 1.5
+			global_position.y = move_toward(global_position.y, target_hover_y, 2.5 * delta)
+
+	linear_velocity.y = 0.0
 	angular_velocity = Vector3.ZERO
 
 	if distance > 0.01:
@@ -162,37 +199,27 @@ func play_hurt(amount: int = 1) -> void:
 		death_position_recorded = global_position
 		set_physics_process(false)
 
-		# Allow rotation and gravity for the death effect.
-		axis_lock_linear_y = false
-		lock_rotation = false
-		gravity_scale = 1.0
+		# Completely lock rigid body physics: keep body position stable, eliminate physics impulses and tumbling
 		linear_velocity = Vector3.ZERO
 		angular_velocity = Vector3.ZERO
+		lock_rotation = true
+		freeze_mode = FREEZE_MODE_STATIC
+		freeze = true
+		gravity_scale = 0.0
+		collision_layer = 0
+		collision_mask = 0
 
-		if not is_instance_valid(player):
-			_find_player()
-
-		if is_instance_valid(player):
-			var knockback_direction: Vector3 = \
-				global_position - player.global_position
-
-			knockback_direction.y = 0.0
-
-			if knockback_direction.length_squared() > 0.001:
-				knockback_direction = knockback_direction.normalized()
-			else:
-				knockback_direction = Vector3.BACK
-
-			apply_central_impulse(
-				knockback_direction * 2.0 + Vector3.UP * 2.0
-			)
-
-		# Slow rotation around Y-axis only.
-		angular_damp = 5.0
-		apply_torque_impulse(Vector3(0.0, 2.0, 0.0))
+		# Fast visual rotation strictly around Y-axis (no X or Z rotation, 0.5s duration)
+		if bat_model != null:
+			bat_model.rotation.x = 0.0
+			bat_model.rotation.z = 0.0
+			var start_rot_y = bat_model.rotation.y
+			var tween = create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			tween.tween_property(bat_model, "rotation:y", start_rot_y + TAU, 0.5)
 
 		ko_sound.play()
-		timer.start()
+		# Complete rotation in 0.5s, hold final pose for 0.1s, then cleanup
+		timer.start(0.6)
 		return
 
 	if animation_player.has_animation("Custom/hurt"):
