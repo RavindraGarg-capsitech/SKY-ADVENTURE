@@ -1,21 +1,29 @@
 extends CanvasLayer
 
-## MobileControls: Provides on-screen virtual joystick, camera touch-drag, and shoot/jump buttons.
+## MobileControls: Two-side mobile touch control system for SKY ADVENTURE.
+## Left half: Fullscreen touch-to-drag Virtual Joystick for player movement.
+## Right half: Hold anywhere to continuously shoot bullets and drag to aim camera.
+## Dedicated mobile-friendly JumpButton on the right side.
 
 @export var force_show: bool = false
 
 @onready var joystick: Control = $Joystick
-@onready var shoot_button: Button = $ShootButton
 @onready var jump_button: Button = get_node_or_null("JumpButton")
 
+# Joystick configuration & state (enlarged for mobile usability)
 var is_dragging_joystick: bool = false
 var joystick_touch_index: int = -1
 var joystick_center: Vector2 = Vector2.ZERO
-var joystick_radius: float = 80.0
+var default_joystick_center: Vector2 = Vector2.ZERO
+var default_joystick_pos: Vector2 = Vector2.ZERO
+var joystick_radius: float = 120.0
+var knob_radius: float = 48.0
 var current_joystick_offset: Vector2 = Vector2.ZERO
 
-var is_dragging_look: bool = false
-var look_touch_index: int = -1
+# Right-side shooting and camera look state
+var is_shooting: bool = false
+var shoot_touch_index: int = -1
+var jump_touch_index: int = -1
 
 var player_node: Node3D = null
 
@@ -28,7 +36,9 @@ func _ready() -> void:
 	visible = is_touch
 
 	if joystick != null:
-		joystick_center = joystick.global_position + joystick.size * 0.5
+		default_joystick_pos = joystick.global_position
+		default_joystick_center = default_joystick_pos + joystick.size * 0.5
+		joystick_center = default_joystick_center
 		if not joystick.draw.is_connected(_on_joystick_draw):
 			joystick.draw.connect(_on_joystick_draw)
 		joystick.queue_redraw()
@@ -44,19 +54,16 @@ func _apply_safe_area() -> void:
 	if win_size.x <= 0 or win_size.y <= 0 or safe_area.size.x <= 0:
 		return
 
-	# Apply safe area padding for notch/cutouts on mobile
+	# Apply safe area padding for mobile notch/cutouts
 	var left_pad = float(safe_area.position.x)
 	var right_pad = float(win_size.x - (safe_area.position.x + safe_area.size.x))
-	var bottom_pad = float(win_size.y - (safe_area.position.y + safe_area.size.y))
 
 	if joystick != null and left_pad > 0:
 		joystick.offset_left += left_pad
 		joystick.offset_right += left_pad
-		joystick_center = joystick.global_position + joystick.size * 0.5
-
-	if shoot_button != null and right_pad > 0:
-		shoot_button.offset_left -= right_pad
-		shoot_button.offset_right -= right_pad
+		default_joystick_pos = joystick.global_position
+		default_joystick_center = default_joystick_pos + joystick.size * 0.5
+		joystick_center = default_joystick_center
 
 	if jump_button != null and right_pad > 0:
 		jump_button.offset_left -= right_pad
@@ -65,53 +72,66 @@ func _apply_safe_area() -> void:
 
 func _find_player() -> void:
 	player_node = get_tree().get_first_node_in_group("player") as Node3D
+	if is_instance_valid(player_node) and player_node.has_method("set_mobile_mode"):
+		player_node.set_mobile_mode(visible)
 
 
 func _setup_buttons() -> void:
-	# Beautiful translucent circular/rounded style for mobile action buttons
+	# Beautiful translucent circular style for mobile JUMP button
 	var style_normal = StyleBoxFlat.new()
-	style_normal.bg_color = Color(0.12, 0.18, 0.28, 0.65)
-	style_normal.corner_radius_top_left = 30
-	style_normal.corner_radius_top_right = 30
-	style_normal.corner_radius_bottom_left = 30
-	style_normal.corner_radius_bottom_right = 30
-	style_normal.border_width_left = 2
-	style_normal.border_width_top = 2
-	style_normal.border_width_right = 2
-	style_normal.border_width_bottom = 2
-	style_normal.border_color = Color(0.4, 0.7, 1.0, 0.7)
+	style_normal.bg_color = Color(0.12, 0.20, 0.32, 0.70)
+	style_normal.corner_radius_top_left = 65
+	style_normal.corner_radius_top_right = 65
+	style_normal.corner_radius_bottom_left = 65
+	style_normal.corner_radius_bottom_right = 65
+	style_normal.border_width_left = 3
+	style_normal.border_width_top = 3
+	style_normal.border_width_right = 3
+	style_normal.border_width_bottom = 3
+	style_normal.border_color = Color(0.4, 0.8, 1.0, 0.85)
 
 	var style_pressed = style_normal.duplicate() as StyleBoxFlat
-	style_pressed.bg_color = Color(0.2, 0.5, 0.9, 0.85)
-	style_pressed.border_color = Color(1.0, 1.0, 1.0, 0.95)
-
-	if shoot_button != null:
-		shoot_button.add_theme_stylebox_override("normal", style_normal)
-		shoot_button.add_theme_stylebox_override("pressed", style_pressed)
-		shoot_button.add_theme_stylebox_override("hover", style_normal)
-		shoot_button.button_down.connect(_on_shoot_down)
-		shoot_button.button_up.connect(_on_shoot_up)
+	style_pressed.bg_color = Color(0.25, 0.65, 1.0, 0.90)
+	style_pressed.border_color = Color(1.0, 1.0, 1.0, 1.0)
 
 	if jump_button != null:
 		jump_button.add_theme_stylebox_override("normal", style_normal)
 		jump_button.add_theme_stylebox_override("pressed", style_pressed)
 		jump_button.add_theme_stylebox_override("hover", style_normal)
-		jump_button.button_down.connect(_on_jump_down)
-		jump_button.button_up.connect(_on_jump_up)
+		if not jump_button.button_down.is_connected(_on_jump_down):
+			jump_button.button_down.connect(_on_jump_down)
+		if not jump_button.button_up.is_connected(_on_jump_up):
+			jump_button.button_up.connect(_on_jump_up)
 
 
 func _on_joystick_draw() -> void:
 	if joystick == null:
 		return
 	var center = joystick.size * 0.5
-	# Outer base ring
-	joystick.draw_circle(center, joystick_radius, Color(0.10, 0.15, 0.25, 0.45))
-	joystick.draw_arc(center, joystick_radius, 0.0, TAU, 36, Color(0.4, 0.75, 1.0, 0.7), 3.0)
+	var is_active = (joystick_touch_index != -1)
 
-	# Draggable inner thumb knob
-	var knob_center = center + current_joystick_offset
-	joystick.draw_circle(knob_center, 34.0, Color(0.25, 0.55, 0.95, 0.8))
-	joystick.draw_arc(knob_center, 34.0, 0.0, TAU, 28, Color(1.0, 1.0, 1.0, 0.9), 2.5)
+	# Colors: subtle translucent when idle, bright neon blue when touched
+	var base_fill = Color(0.08, 0.14, 0.24, 0.55 if is_active else 0.25)
+	var base_ring = Color(0.40, 0.80, 1.0, 0.85 if is_active else 0.40)
+	var knob_fill = Color(0.25, 0.65, 1.0, 0.90 if is_active else 0.45)
+	var knob_ring = Color(1.0, 1.0, 1.0, 0.95 if is_active else 0.60)
+
+	# 1. Outer base disc and ring (Radius 120.0px, ~240px wide)
+	joystick.draw_circle(center, joystick_radius, base_fill)
+	joystick.draw_arc(center, joystick_radius, 0.0, TAU, 48, base_ring, 3.5)
+
+	# Directional cardinal ticks for tactile arcade feel
+	var tick_len = 10.0
+	for angle in [0.0, PI * 0.5, PI, PI * 1.5]:
+		var dir = Vector2(cos(angle), sin(angle))
+		joystick.draw_line(center + dir * (joystick_radius - tick_len), center + dir * (joystick_radius + 4.0), base_ring, 2.5)
+
+	# 2. Draggable thumb knob (Radius 48.0px, ~96px wide)
+	var knob_pos = center + current_joystick_offset
+	joystick.draw_circle(knob_pos, knob_radius, knob_fill)
+	joystick.draw_arc(knob_pos, knob_radius, 0.0, TAU, 36, knob_ring, 3.0)
+	# Center dot
+	joystick.draw_circle(knob_pos, 8.0, Color(1.0, 1.0, 1.0, 0.85 if is_active else 0.5))
 
 
 func _input(event: InputEvent) -> void:
@@ -124,49 +144,96 @@ func _input(event: InputEvent) -> void:
 		_handle_screen_drag(event)
 
 
-func _is_point_on_ui_button(pos: Vector2) -> bool:
-	if shoot_button != null and shoot_button.is_visible_in_tree() and shoot_button.get_global_rect().has_point(pos):
-		return true
-	if jump_button != null and jump_button.is_visible_in_tree() and jump_button.get_global_rect().has_point(pos):
-		return true
+func _is_point_on_jump_button(pos: Vector2) -> bool:
+	if jump_button != null and jump_button.is_visible_in_tree():
+		return jump_button.get_global_rect().has_point(pos)
+	return false
+
+
+func _is_point_on_ui(pos: Vector2) -> bool:
+	# Pause button on HUD
 	var pause_btn = get_tree().get_first_node_in_group("pause_button")
 	if pause_btn is Control and pause_btn.is_visible_in_tree() and pause_btn.get_global_rect().has_point(pos):
 		return true
+
+	# Check if any modal panel is currently visible and open
+	var pause_modal = get_tree().get_first_node_in_group("pause_modal")
+	if pause_modal != null and pause_modal.has_method("is_modal_visible") and pause_modal.is_modal_visible():
+		return true
+
+	var upg_modal = get_tree().get_first_node_in_group("upgrade_modal")
+	if upg_modal != null:
+		var panel = upg_modal.get_node_or_null("ModalPanel")
+		if panel != null and panel.visible:
+			return true
+
+	var game_over_modal = get_tree().get_first_node_in_group("game_over_modal")
+	if game_over_modal != null:
+		var panel = game_over_modal.get_node_or_null("ModalPanel")
+		if panel != null and panel.visible:
+			return true
+
 	return false
 
 
 func _handle_screen_touch(event: InputEventScreenTouch) -> void:
 	var viewport_width = get_viewport().get_visible_rect().size.x
+	var half_width = viewport_width * 0.5
 
 	if event.pressed:
-		# Don't capture touches on UI buttons (shoot, jump, pause)
-		if _is_point_on_ui_button(event.position):
+		# Check if touching Jump button
+		if _is_point_on_jump_button(event.position):
+			jump_touch_index = event.index
+			_on_jump_down()
 			return
 
-		# Touch on left half of screen -> Joystick
-		if event.position.x < viewport_width * 0.45:
+		# Check if touching other UI elements (Pause button, open modals)
+		if _is_point_on_ui(event.position):
+			return
+
+		# LEFT SIDE: Movement ONLY (never triggers shooting)
+		if event.position.x < half_width:
 			if joystick_touch_index == -1:
 				joystick_touch_index = event.index
 				is_dragging_joystick = true
 				if joystick != null:
-					joystick.global_position = event.position - joystick.size * 1.0
+					# Center the virtual joystick at the initial touch point
+					joystick.global_position = event.position - joystick.size * 0.5
 					joystick_center = event.position
 					current_joystick_offset = Vector2.ZERO
 					joystick.queue_redraw()
-		# Touch on right half of screen -> Camera Look
-		elif event.position.x >= viewport_width * 0.45:
-			if look_touch_index == -1:
-				look_touch_index = event.index
-				is_dragging_look = true
+
+		# RIGHT SIDE: Continuous Shooting + Camera Aiming (never triggers movement)
+		else:
+			if shoot_touch_index == -1:
+				shoot_touch_index = event.index
+				is_shooting = true
+				if not is_instance_valid(player_node):
+					_find_player()
+				if is_instance_valid(player_node) and player_node.has_method("set_mobile_shooting"):
+					player_node.set_mobile_shooting(true)
+				Input.action_press("shoot")
 	else:
+		# Touch release handling per tracked index
 		if event.index == joystick_touch_index:
 			_reset_joystick()
-		elif event.index == look_touch_index:
-			is_dragging_look = false
-			look_touch_index = -1
+
+		elif event.index == shoot_touch_index:
+			is_shooting = false
+			shoot_touch_index = -1
+			if not is_instance_valid(player_node):
+				_find_player()
+			if is_instance_valid(player_node) and player_node.has_method("set_mobile_shooting"):
+				player_node.set_mobile_shooting(false)
+			Input.action_release("shoot")
+
+		elif event.index == jump_touch_index:
+			jump_touch_index = -1
+			_on_jump_up()
 
 
 func _handle_screen_drag(event: InputEventScreenDrag) -> void:
+	# Left finger drag: update movement vector
 	if event.index == joystick_touch_index and is_dragging_joystick:
 		var offset: Vector2 = event.position - joystick_center
 		var clamped_offset = offset.limit_length(joystick_radius)
@@ -177,7 +244,8 @@ func _handle_screen_drag(event: InputEventScreenDrag) -> void:
 		var norm_input = clamped_offset / joystick_radius
 		_apply_movement_input(norm_input)
 
-	elif event.index == look_touch_index and is_dragging_look:
+	# Right finger drag: rotate camera while continuous shooting is active
+	elif event.index == shoot_touch_index and is_shooting:
 		if not is_instance_valid(player_node):
 			_find_player()
 
@@ -190,7 +258,7 @@ func _handle_screen_drag(event: InputEventScreenDrag) -> void:
 
 
 func _apply_movement_input(vec: Vector2) -> void:
-	# Feed into Godot Input map
+	# Feed into Godot Input map with smooth analog thresholds
 	if vec.x < -0.2:
 		Input.action_press("move_left", -vec.x)
 	else:
@@ -217,6 +285,9 @@ func _reset_joystick() -> void:
 	joystick_touch_index = -1
 	current_joystick_offset = Vector2.ZERO
 	if joystick != null:
+		# Return to default resting position
+		joystick.global_position = default_joystick_pos
+		joystick_center = default_joystick_center
 		joystick.queue_redraw()
 	Input.action_release("move_left")
 	Input.action_release("move_right")
@@ -224,12 +295,22 @@ func _reset_joystick() -> void:
 	Input.action_release("move_back")
 
 
-func _on_shoot_down() -> void:
-	Input.action_press("shoot")
+func _release_all_inputs() -> void:
+	_reset_joystick()
+	if is_shooting or shoot_touch_index != -1:
+		is_shooting = false
+		shoot_touch_index = -1
+		if is_instance_valid(player_node) and player_node.has_method("set_mobile_shooting"):
+			player_node.set_mobile_shooting(false)
+		Input.action_release("shoot")
+	if jump_touch_index != -1:
+		jump_touch_index = -1
+		Input.action_release("jump")
 
 
-func _on_shoot_up() -> void:
-	Input.action_release("shoot")
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PAUSED or what == NOTIFICATION_APPLICATION_PAUSED:
+		_release_all_inputs()
 
 
 func _on_jump_down() -> void:

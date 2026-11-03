@@ -457,6 +457,35 @@ shape = SubResource("WorldBoundaryShape3D_killplane")
 
 [node name="GameOverModal" parent="UI" unique_id=812458906 instance=ExtResource("13_gameover")]
 
+[node name="MobileUI" type="CanvasLayer" parent="UI" unique_id=171420471]
+script = ExtResource("12_mobile")
+
+[node name="Joystick" type="Control" parent="UI/MobileUI" unique_id=1009731536]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = -360.0
+offset_right = 360.0
+offset_bottom = -60.0
+grow_vertical = 0
+
+[node name="JumpButton" type="Button" parent="UI/MobileUI" unique_id=392589513]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -210.0
+offset_top = -210.0
+offset_right = -80.0
+offset_bottom = -80.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "JUMP"
+
 [node name="HomeUI" type="CanvasLayer" parent="UI" unique_id=1489525138]
 script = ExtResource("5_q5axl")
 
@@ -475,7 +504,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.12, 0.16, 0.24, 0.88)
+color = Color(0, 0, 0, 1)
 
 [node name="PlayButton" type="Button" parent="UI/HomeUI/HomePanel" unique_id=607040660]
 layout_mode = 1
@@ -508,35 +537,6 @@ Floating Islands Survival"
 label_settings = SubResource("LabelSettings_title")
 horizontal_alignment = 1
 vertical_alignment = 1
-
-[node name="MobileUI" type="CanvasLayer" parent="UI" unique_id=171420471]
-script = ExtResource("12_mobile")
-
-[node name="Joystick" type="Control" parent="UI/MobileUI" unique_id=1009731536]
-layout_mode = 3
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 80.0
-offset_top = -377.0
-offset_right = 445.0
-offset_bottom = -80.0
-grow_vertical = 0
-
-[node name="JumpButton" type="Button" parent="UI/MobileUI" unique_id=392589513]
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -340.0
-offset_top = -213.0
-offset_right = -63.0
-offset_bottom = -80.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_font_sizes/font_size = 24
-text = "JUMP"
 
 [connection signal="mob_spawned" from="Gameplay/SpawnPoints/MobSpawner3D" to="." method="_on_mob_spawner_3d_mob_spawned"]
 [connection signal="body_entered" from="Gameplay/KillPlane" to="." method="_on_kill_plane_body_entered"]

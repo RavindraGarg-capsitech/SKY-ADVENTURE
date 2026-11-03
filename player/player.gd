@@ -108,6 +108,9 @@ const WEAPONS: Dictionary = {
 var unlocked_weapons: Array[String] = ["default"]
 var current_weapon_id: String = "default"
 
+var is_mobile_device: bool = false
+var mobile_shooting: bool = false
+
 const SPEED: float = 5.5
 const GRAVITY: float = 20.0
 const JUMP_VELOCITY: float = 10.0
@@ -120,6 +123,7 @@ func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	current_health = max_health
 	health_changed.emit(current_health, max_health)
+	is_mobile_device = DisplayServer.is_touchscreen_available() or OS.has_feature("mobile") or OS.get_name() in ["Android", "iOS"]
 
 	var sm = get_node_or_null("/root/SaveManager")
 	if sm != null and "mouse_sensitivity" in sm:
@@ -162,8 +166,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 			_rotate_camera(event.relative)
 
-	# Capture mouse on left click
-	if event is InputEventMouseButton:
+	# Capture mouse on left click (PC desktop only)
+	if not is_mobile_device and event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
@@ -237,9 +241,27 @@ func _physics_process(delta: float) -> void:
 	if is_on_floor() and velocity.y > 0.0:
 		velocity.y = 0.0
 
-	# PC shooting
-	if Input.is_action_pressed("shoot") and %Timer.is_stopped():
+	# Shooting logic:
+	# On mobile devices, shooting is strictly controlled by the right-side touch zone.
+	# On PC desktop, shooting is controlled by mouse left-click ("shoot" action).
+	var wants_to_shoot: bool = false
+	if is_mobile_device:
+		wants_to_shoot = mobile_shooting
+	else:
+		wants_to_shoot = mobile_shooting or Input.is_action_pressed("shoot")
+
+	if wants_to_shoot and %Timer.is_stopped():
 		shoot_bullet()
+
+
+func set_mobile_mode(active: bool) -> void:
+	is_mobile_device = active
+	if not active:
+		mobile_shooting = false
+
+
+func set_mobile_shooting(enable: bool) -> void:
+	mobile_shooting = enable
 
 
 func get_current_weapon_data() -> Dictionary:
@@ -407,6 +429,7 @@ func die() -> void:
 		return
 
 	is_dead = true
+	mobile_shooting = false
 	velocity = Vector3.ZERO
 	set_physics_process(false)
 	set_process_unhandled_input(false)

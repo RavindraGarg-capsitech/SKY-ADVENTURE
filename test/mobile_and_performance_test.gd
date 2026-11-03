@@ -93,15 +93,13 @@ func _run_tests() -> void:
 
 	var joy = Control.new()
 	joy.name = "Joystick"
-	joy.size = Vector2(160, 160)
+	joy.size = Vector2(300, 300)
 	mob_ui.add_child(joy)
-
-	var shoot_b = Button.new()
-	shoot_b.name = "ShootButton"
-	mob_ui.add_child(shoot_b)
 
 	var jump_b = Button.new()
 	jump_b.name = "JumpButton"
+	jump_b.position = Vector2(800, 500)
+	jump_b.size = Vector2(120, 120)
 	mob_ui.add_child(jump_b)
 
 	root.add_child(mob_ui)
@@ -120,17 +118,15 @@ func _run_tests() -> void:
 	else:
 		push_error("TEST 6 FAILED: Input actions not mapped correctly by joystick.")
 
-	# Test 7: Touch Exclusion for UI Buttons
+	# Test 7: Touch Exclusion for Jump Button
 	total += 1
-	shoot_b.position = Vector2(500, 500)
-	shoot_b.size = Vector2(100, 100)
-	var on_btn = mob_ui._is_point_on_ui_button(Vector2(550, 550))
-	var off_btn = not mob_ui._is_point_on_ui_button(Vector2(200, 200))
-	if on_btn and off_btn:
-		print("TEST 7 PASSED: Touch exclusion rect correctly prevents camera drag when tapping action buttons.")
+	var on_jump = mob_ui._is_point_on_jump_button(Vector2(850, 550))
+	var off_jump = not mob_ui._is_point_on_jump_button(Vector2(200, 200))
+	if on_jump and off_jump:
+		print("TEST 7 PASSED: Jump button touch exclusion correctly isolates jump from shooting.")
 		passed += 1
 	else:
-		push_error("TEST 7 FAILED: Touch exclusion failed.")
+		push_error("TEST 7 FAILED: Jump button touch exclusion failed.")
 
 	# Test 8: Pause Modal Graphics Quality Buttons
 	total += 1
