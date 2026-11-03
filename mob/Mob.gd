@@ -188,7 +188,7 @@ func _try_attack() -> void:
 	if attack_timer <= 0.0:
 		attack_timer = attack_cooldown
 		if player.has_method("take_damage"):
-			player.take_damage(attack_damage)
+			player.take_damage(attack_damage, global_position)
 
 
 func play_hurt(amount: int = 1) -> void:

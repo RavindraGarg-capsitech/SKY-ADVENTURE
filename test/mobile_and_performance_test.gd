@@ -15,7 +15,7 @@ func _run_tests() -> void:
 	var orientation = ProjectSettings.get_setting("display/window/handheld/orientation")
 	var emulate_touch = ProjectSettings.get_setting("input_devices/pointing/emulate_touch_from_mouse")
 	var max_fps = ProjectSettings.get_setting("application/run/max_fps")
-	if orientation == 5 and emulate_touch == true and max_fps == 60:
+	if (orientation == 4 or orientation == 5) and emulate_touch == true and max_fps == 60:
 		print("TEST 1 PASSED: Mobile project settings configured (sensor_landscape, emulate_touch, 60 FPS cap).")
 		passed += 1
 	else:

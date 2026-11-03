@@ -26,6 +26,6 @@ func _on_body_entered(body: Node3D) -> void:
 		return
 
 	if body.is_in_group("player") and body.has_method("take_damage"):
-		body.take_damage(damage)
+		body.take_damage(damage, global_position)
 
 	queue_free()

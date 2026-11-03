@@ -61,6 +61,12 @@ fog_sky_affect = 0.4
 fog_height = -5.0
 fog_height_density = 0.05
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_platform"]
+size = Vector3(5.5, 0.8, 5.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_platform"]
+size = Vector3(5.5, 0.8, 5.5)
+
 [sub_resource type="LabelSettings" id="LabelSettings_legacy"]
 font_size = 60
 shadow_size = 8
@@ -338,11 +344,17 @@ material = ExtResource("17_stone")
 
 [node name="MovingPlatforms" type="Node3D" parent="World" unique_id=900230001]
 
-[node name="MovingPlatform1" type="CSGBox3D" parent="World/MovingPlatforms" unique_id=1914156900]
+[node name="MovingPlatform1" type="AnimatableBody3D" parent="World/MovingPlatforms" unique_id=1914156900]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -17)
-use_collision = true
-size = Vector3(5.5, 0.8, 5.5)
-material = ExtResource("17_stone")
+collision_mask = 0
+sync_to_physics = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/MovingPlatforms/MovingPlatform1" unique_id=423286179]
+shape = SubResource("BoxShape3D_platform")
+
+[node name="PlatformMesh" type="MeshInstance3D" parent="World/MovingPlatforms/MovingPlatform1" unique_id=1680290203]
+mesh = SubResource("BoxMesh_platform")
+surface_material_override/0 = ExtResource("17_stone")
 
 [node name="MovingPlatform_Crystal" parent="World/MovingPlatforms/MovingPlatform1" unique_id=1527765655 instance=ExtResource("25_crystal")]
 transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0.4, 0)

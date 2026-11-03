@@ -2,6 +2,7 @@
 extends CharacterBody3D
 
 signal health_changed(current_health: int, max_health: int)
+signal player_damaged(amount: int, attacker_pos: Vector3)
 signal player_died
 signal weapon_changed(weapon_id: String, weapon_name: String, weapon_info: String, icon: String)
 signal shield_activated(duration: float)
@@ -112,8 +113,9 @@ var is_mobile_device: bool = false
 var mobile_shooting: bool = false
 
 const SPEED: float = 5.5
-const GRAVITY: float = 20.0
-const JUMP_VELOCITY: float = 10.0
+const GRAVITY: float = 22.0
+const JUMP_VELOCITY: float = 13.0
+const MIN_JUMP_VELOCITY: float = 8.0
 const MOUSE_SENSITIVITY: float = 0.5
 const LOOK_SENSITIVITY: float = 0.2
 
@@ -124,6 +126,12 @@ func _ready() -> void:
 	current_health = max_health
 	health_changed.emit(current_health, max_health)
 	is_mobile_device = DisplayServer.is_touchscreen_available() or OS.has_feature("mobile") or OS.get_name() in ["Android", "iOS"]
+
+	# Platform-following and stable floor physics
+	floor_snap_length = 0.4
+	floor_stop_on_slope = true
+	floor_constant_speed = true
+	platform_on_leave = CharacterBody3D.PLATFORM_ON_LEAVE_ADD_VELOCITY
 
 	var sm = get_node_or_null("/root/SaveManager")
 	if sm != null and "mouse_sensitivity" in sm:
@@ -166,8 +174,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 			_rotate_camera(event.relative)
 
-	# Capture mouse on left click (PC desktop only)
-	if not is_mobile_device and event is InputEventMouseButton:
+	# Capture mouse on left click
+	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
@@ -226,15 +234,15 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= GRAVITY * delta
 
-	# Keyboard jump
+	# Keyboard / mobile jump
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 
 	elif (
 		Input.is_action_just_released("jump")
-		and velocity.y > 0.0
+		and velocity.y > MIN_JUMP_VELOCITY
 	):
-		velocity.y = 0.0
+		velocity.y = MIN_JUMP_VELOCITY
 
 	move_and_slide()
 
@@ -242,13 +250,10 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 
 	# Shooting logic:
-	# On mobile devices, shooting is strictly controlled by the right-side touch zone.
-	# On PC desktop, shooting is controlled by mouse left-click ("shoot" action).
-	var wants_to_shoot: bool = false
-	if is_mobile_device:
-		wants_to_shoot = mobile_shooting
-	else:
-		wants_to_shoot = mobile_shooting or Input.is_action_pressed("shoot")
+	# - PC: Left mouse button click ("shoot" action)
+	# - Mobile: Right-side touch zone (mobile_shooting)
+	# Both systems operate independently; PC left click is completely unrestrained.
+	var wants_to_shoot: bool = Input.is_action_pressed("shoot") or mobile_shooting
 
 	if wants_to_shoot and %Timer.is_stopped():
 		shoot_bullet()
@@ -401,7 +406,7 @@ func apply_upgrade(upgrade_id: String) -> void:
 			heal(25)
 
 
-func take_damage(amount: int) -> void:
+func take_damage(amount: int, attacker_pos: Variant = null) -> void:
 	if is_dead or amount <= 0:
 		return
 
@@ -411,6 +416,12 @@ func take_damage(amount: int) -> void:
 
 	current_health = clampi(current_health - amount, 0, max_health)
 	health_changed.emit(current_health, max_health)
+
+	var hit_pos: Vector3 = Vector3.INF
+	if attacker_pos != null and attacker_pos is Vector3:
+		hit_pos = attacker_pos
+
+	player_damaged.emit(amount, hit_pos)
 
 	if current_health <= 0:
 		die()

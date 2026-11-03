@@ -36,6 +36,8 @@ var _heal_tween: Tween = null
 @onready var powerup_notification: Label = get_node_or_null("PowerupNotification")
 var _powerup_tween: Tween = null
 
+@onready var damage_indicator: Control = get_node_or_null("DamageIndicator")
+
 
 func _ready() -> void:
 	if not is_in_group("hud"):
@@ -145,6 +147,10 @@ func _bind_player(player: Node) -> void:
 	if player.has_signal("health_changed"):
 		if not player.health_changed.is_connected(_on_player_health_changed):
 			player.health_changed.connect(_on_player_health_changed)
+
+	if player.has_signal("player_damaged"):
+		if not player.player_damaged.is_connected(_on_player_damaged):
+			player.player_damaged.connect(_on_player_damaged)
 
 	if player.has_signal("weapon_changed"):
 		if not player.weapon_changed.is_connected(_on_player_weapon_changed):
@@ -260,6 +266,14 @@ func _bind_wave_manager(wave_mgr: Node) -> void:
 
 func _on_player_health_changed(current: int, maximum: int) -> void:
 	update_health(current, maximum)
+
+
+func _on_player_damaged(_amount: int, hit_pos: Vector3) -> void:
+	if damage_indicator == null:
+		damage_indicator = get_node_or_null("DamageIndicator")
+	if damage_indicator != null and damage_indicator.has_method("show_damage_direction"):
+		var player = get_tree().get_first_node_in_group("player")
+		damage_indicator.show_damage_direction(hit_pos, player)
 
 
 func update_health(current: int, maximum: int) -> void:

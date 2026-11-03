@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://c6508k0b81h3u"]
 
 [ext_resource type="Script" path="res://ui/hud.gd" id="1_hud01"]
+[ext_resource type="Script" path="res://ui/damage_indicator.gd" id="2_dmgind"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0.12, 0.12, 0.14, 0.8)
@@ -137,6 +138,16 @@ outline_color = Color(0, 0, 0, 0.95)
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud01")
+
+[node name="DamageIndicator" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_dmgind")
 
 [node name="HealthContainer" type="Control" parent="."]
 layout_mode = 3
