@@ -518,25 +518,10 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 80.0
-offset_top = -240.0
-offset_right = 240.0
+offset_top = -377.0
+offset_right = 445.0
 offset_bottom = -80.0
 grow_vertical = 0
-
-[node name="ShootButton" type="Button" parent="UI/MobileUI" unique_id=392589512]
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -220.0
-offset_top = -220.0
-offset_right = -100.0
-offset_bottom = -100.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_font_sizes/font_size = 28
-text = "FIRE"
 
 [node name="JumpButton" type="Button" parent="UI/MobileUI" unique_id=392589513]
 anchors_preset = 3
@@ -545,8 +530,8 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -340.0
-offset_top = -180.0
-offset_right = -240.0
+offset_top = -213.0
+offset_right = -63.0
 offset_bottom = -80.0
 grow_horizontal = 0
 grow_vertical = 0

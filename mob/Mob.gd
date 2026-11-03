@@ -18,6 +18,7 @@ signal died
 @export var enemy_roughness: float = 0.42
 
 var is_dead: bool = false
+var _death_emitted: bool = false
 var attack_timer: float = 0.0
 
 @onready var animation_player: AnimationPlayer = \
@@ -25,6 +26,9 @@ var attack_timer: float = 0.0
 
 @onready var bat_model: Node3D = \
 	$CollisionShape3D/bat_model
+
+@onready var collision_shape: CollisionShape3D = \
+	get_node_or_null("CollisionShape3D")
 
 var player: Node3D = null
 var death_position_recorded: Vector3 = Vector3.ZERO
@@ -192,42 +196,79 @@ func play_hurt(amount: int = 1) -> void:
 		return
 
 	health -= amount
-	hurt_sound.play()
 
 	if health <= 0:
-		is_dead = true
-		death_position_recorded = global_position
-		set_physics_process(false)
-
-		# Completely lock rigid body physics: keep body position stable, eliminate physics impulses and tumbling
-		linear_velocity = Vector3.ZERO
-		angular_velocity = Vector3.ZERO
-		lock_rotation = true
-		freeze_mode = FREEZE_MODE_STATIC
-		freeze = true
-		gravity_scale = 0.0
-		collision_layer = 0
-		collision_mask = 0
-
-		# Fast visual rotation strictly around Y-axis (no X or Z rotation, 0.5s duration)
-		if bat_model != null:
-			bat_model.rotation.x = 0.0
-			bat_model.rotation.z = 0.0
-			var start_rot_y = bat_model.rotation.y
-			var tween = create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-			tween.tween_property(bat_model, "rotation:y", start_rot_y + TAU, 0.5)
-
-		ko_sound.play()
-		# Complete rotation in 0.5s, hold final pose for 0.1s, then cleanup
-		timer.start(0.6)
+		_start_death_sequence()
 		return
 
-	if animation_player.has_animation("Custom/hurt"):
-		animation_player.play("Custom/hurt")
-	elif animation_player.has_animation("hurt"):
-		animation_player.play("hurt")
+	# Living enemy: play hurt sound and brief hurt animation
+	if hurt_sound != null and not hurt_sound.playing:
+		hurt_sound.play()
+
+	if animation_player != null:
+		if animation_player.has_animation("Custom/hurt"):
+			animation_player.play("Custom/hurt")
+		elif animation_player.has_animation("hurt"):
+			animation_player.play("hurt")
+		else:
+			push_warning("Hurt animation not found!")
+
+
+func _start_death_sequence() -> void:
+	is_dead = true
+	death_position_recorded = global_position
+
+	# 1. Immediate AI, attack & physics processing shutdown
+	set_physics_process(false)
+	set_process(false)
+	linear_velocity = Vector3.ZERO
+	angular_velocity = Vector3.ZERO
+	attack_timer = 999.0
+
+	# 2. Disable collision to prevent further interaction or bullet impacts
+	if collision_shape != null:
+		collision_shape.set_deferred("disabled", true)
+	collision_layer = 0
+	collision_mask = 0
+	freeze_mode = FREEZE_MODE_STATIC
+	freeze = true
+	gravity_scale = 0.0
+
+	# 3. Halt expensive skeletal animation calculation (saves mobile CPU/GPU cycles)
+	if animation_player != null:
+		animation_player.stop()
+
+	# 4. Play KO sound
+	if ko_sound != null:
+		ko_sound.play()
+
+	# 5. Lightweight, smooth procedural death animation (0.45s)
+	# Combines quick Y-spin, subtle vertical drop, and smooth shrink to zero.
+	if bat_model != null:
+		bat_model.rotation.x = 0.0
+		bat_model.rotation.z = 0.0
+		var start_pos_y: float = bat_model.position.y
+		var start_rot_y: float = bat_model.rotation.y
+
+		var death_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_QUAD)
+		# Fast smooth spin strictly around Y-axis
+		death_tween.tween_property(bat_model, "rotation:y", start_rot_y + TAU, 0.45).set_ease(Tween.EASE_OUT)
+		# Subtle downward fall
+		death_tween.tween_property(bat_model, "position:y", start_pos_y - 0.4, 0.45).set_ease(Tween.EASE_IN)
+		# Smooth shrink to tiny scale
+		death_tween.tween_property(bat_model, "scale", Vector3(0.01, 0.01, 0.01), 0.45).set_ease(Tween.EASE_IN)
+
+		death_tween.chain().tween_callback(self._on_death_completed)
 	else:
-		push_warning("Hurt animation not found!")
+		_on_death_completed()
+
+
+func _on_death_completed() -> void:
+	if _death_emitted:
+		return
+	_death_emitted = true
+	died.emit()
+	queue_free()
 
 
 func _on_animation_player_animation_finished(
@@ -237,11 +278,10 @@ func _on_animation_player_animation_finished(
 		anim_name == &"Custom/hurt"
 		or anim_name == &"hurt"
 	):
-		if health > 0 and not is_dead:
+		if health > 0 and not is_dead and animation_player != null:
 			animation_player.play("Idle")
 
 
 func _on_timer_timeout() -> void:
-	if is_dead:
-		died.emit()
-		queue_free()
+	if is_dead and not _death_emitted:
+		_on_death_completed()

@@ -149,7 +149,7 @@ func _handle_screen_touch(event: InputEventScreenTouch) -> void:
 				joystick_touch_index = event.index
 				is_dragging_joystick = true
 				if joystick != null:
-					joystick.global_position = event.position - joystick.size * 0.5
+					joystick.global_position = event.position - joystick.size * 1.0
 					joystick_center = event.position
 					current_joystick_offset = Vector2.ZERO
 					joystick.queue_redraw()

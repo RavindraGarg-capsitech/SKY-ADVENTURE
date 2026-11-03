@@ -128,5 +128,6 @@ func _spawn_pickup(scene: PackedScene, pos: Vector3) -> void:
 	if scene == null:
 		return
 	var pickup = scene.instantiate() as Node3D
-	get_tree().current_scene.add_child(pickup)
+	var target = get_tree().current_scene if get_tree().current_scene != null else get_tree().root
+	target.add_child(pickup)
 	pickup.global_position = pos

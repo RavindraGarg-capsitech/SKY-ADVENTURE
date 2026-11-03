@@ -77,6 +77,12 @@ func play_hurt(amount: int = 1) -> void:
 		hud_node.update_boss_health(maxi(0, health), max_health)
 
 
+func _on_death_completed() -> void:
+	if hud_node != null and hud_node.has_method("hide_boss_bar"):
+		hud_node.hide_boss_bar()
+	super._on_death_completed()
+
+
 func _on_timer_timeout() -> void:
 	if hud_node != null and hud_node.has_method("hide_boss_bar"):
 		hud_node.hide_boss_bar()
