@@ -10,8 +10,8 @@ config_version=5
 
 [application]
 
-config/name="NEW 3 D game"
-run/main_scene="uid://dp7sxe5xl5shk"
+config/name="SKY ADVENTURE"
+run/main_scene="res://boot/boot_scene.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 run/max_fps=60
 config/icon="res://icon.svg"

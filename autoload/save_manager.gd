@@ -24,13 +24,51 @@ var mouse_sensitivity: float = 1.0
 var mobile_sensitivity: float = 1.0
 var graphics_quality: String = ""
 
+var _is_dirty: bool = false
+var _debounce_timer: Timer = null
+
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_setup_debounce_timer()
 	load_game()
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_PAUSED:
+		if _is_dirty:
+			save_game()
+
+
+func _setup_debounce_timer() -> void:
+	_debounce_timer = Timer.new()
+	_debounce_timer.name = "SaveDebounceTimer"
+	_debounce_timer.wait_time = 1.5
+	_debounce_timer.one_shot = true
+	_debounce_timer.timeout.connect(_on_debounce_timer_timeout)
+	add_child(_debounce_timer)
+
+
+func mark_dirty_and_save_debounced() -> void:
+	_is_dirty = true
+	if _debounce_timer != null and _debounce_timer.is_stopped():
+		_debounce_timer.start()
+
+
+func _on_debounce_timer_timeout() -> void:
+	if _is_dirty:
+		save_game()
+
+
+func flush() -> void:
+	if _is_dirty:
+		save_game()
+
+
 func load_game() -> void:
+	if _is_dirty:
+		save_game()
+
 	if not FileAccess.file_exists(SAVE_PATH):
 		return
 
@@ -76,6 +114,10 @@ func load_game() -> void:
 
 
 func save_game() -> void:
+	_is_dirty = false
+	if _debounce_timer != null and not _debounce_timer.is_stopped():
+		_debounce_timer.stop()
+
 	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file == null:
 		push_error("SaveManager: Unable to open save file for writing.")

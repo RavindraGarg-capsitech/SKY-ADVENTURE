@@ -42,11 +42,14 @@ func add_coins(amount: int) -> void:
 	coins += amount
 	coins_changed.emit(coins)
 
-	# Direct persistence via SaveManager
+	# Direct persistence via SaveManager (debounced to avoid disk I/O stutter in combat)
 	var sm = get_node_or_null("/root/SaveManager")
 	if sm != null:
 		sm.total_coins += amount
-		sm.save_game()
+		if sm.has_method("mark_dirty_and_save_debounced"):
+			sm.mark_dirty_and_save_debounced()
+		else:
+			sm.save_game()
 
 
 func add_xp(amount: int) -> void:
@@ -65,12 +68,17 @@ func _on_enemy_died(mob: Node3D, death_position: Vector3) -> void:
 	if mob != null and (mob.name.to_lower().contains("boss") or mob.mass > 4.0):
 		is_boss = true
 
+	var pm = get_node_or_null("/root/PoolManager")
+
 	if is_boss:
 		add_xp(200)
 		for i in range(8):
 			var offset = Vector3(randf_range(-2.0, 2.0), 0.0, randf_range(-2.0, 2.0))
 			var safe_pos = _find_safe_ground_position(raw_pos + offset)
-			_spawn_pickup(COIN_PICKUP_SCENE, safe_pos)
+			if pm != null and pm.has_method("spawn_coin"):
+				pm.spawn_coin(safe_pos)
+			else:
+				_spawn_pickup(COIN_PICKUP_SCENE, safe_pos)
 		for i in range(3):
 			var offset = Vector3(randf_range(-1.5, 1.5), 0.0, randf_range(-1.5, 1.5))
 			var safe_pos = _find_safe_ground_position(raw_pos + offset)
@@ -80,9 +88,12 @@ func _on_enemy_died(mob: Node3D, death_position: Vector3) -> void:
 		_spawn_pickup(SHIELD_PICKUP_SCENE, shield_pos)
 	else:
 		add_xp(10)
-		# Guaranteed coin drop
+		# Guaranteed coin drop (pooled for zero allocations and zero frame hitches)
 		var safe_pos = _find_safe_ground_position(raw_pos)
-		_spawn_pickup(COIN_PICKUP_SCENE, safe_pos)
+		if pm != null and pm.has_method("spawn_coin"):
+			pm.spawn_coin(safe_pos)
+		else:
+			_spawn_pickup(COIN_PICKUP_SCENE, safe_pos)
 
 		# 25% chance for health pickup
 		if randf() < 0.25:
@@ -128,6 +139,8 @@ func _spawn_pickup(scene: PackedScene, pos: Vector3) -> void:
 	if scene == null:
 		return
 	var pickup = scene.instantiate() as Node3D
+	if "skip_ground_raycast" in pickup:
+		pickup.skip_ground_raycast = true
 	var target = get_tree().current_scene if get_tree().current_scene != null else get_tree().root
 	target.add_child(pickup)
 	pickup.global_position = pos

@@ -55,6 +55,8 @@ func spawn_mob(custom_scene: PackedScene = null, parent_node: Node = null, spawn
 
 	var new_mob: Node3D = scene.instantiate() as Node3D
 	var target_parent: Node = parent_node if parent_node != null else get_tree().current_scene
+	if target_parent == null:
+		target_parent = get_tree().root
 	target_parent.add_child(new_mob)
 	if spawn_pos != Vector3.ZERO:
 		new_mob.global_position = spawn_pos

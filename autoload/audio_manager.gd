@@ -33,7 +33,7 @@ func _ready() -> void:
 
 	_synthesize_sound_effects()
 	_load_saved_volume()
-	_start_ambient_sky_drone()
+	_start_ambient_sky_drone.call_deferred()
 
 
 func _load_saved_volume() -> void:
@@ -91,14 +91,14 @@ func play_click_sound() -> void:
 # --- Procedural Audio Synthesis ---
 
 func _synthesize_sound_effects() -> void:
-	coin_sound_wav = _create_bell_tone(987.77, 0.22, 0.5)      # B5 bell
-	upgrade_sound_wav = _create_arpeggio([523.25, 659.25, 783.99, 1046.5], 0.45) # C Major chord
-	wave_clear_wav = _create_arpeggio([440.0, 554.37, 659.25, 880.0], 0.55)     # A Major fanfare
-	ui_click_wav = _create_click_tone(0.04)
+	coin_sound_wav = _create_bell_tone(987.77, 0.18, 0.45)
+	upgrade_sound_wav = _create_arpeggio([523.25, 659.25, 783.99, 1046.5], 0.35)
+	wave_clear_wav = _create_arpeggio([440.0, 554.37, 659.25, 880.0], 0.40)
+	ui_click_wav = _create_click_tone(0.03)
 
 
 func _create_bell_tone(freq: float, duration: float, decay: float) -> AudioStreamWAV:
-	var sample_rate: int = 22050
+	var sample_rate: int = 11025
 	var num_samples: int = int(sample_rate * duration)
 	var data: PackedByteArray = PackedByteArray()
 	data.resize(num_samples)
@@ -117,7 +117,7 @@ func _create_bell_tone(freq: float, duration: float, decay: float) -> AudioStrea
 
 
 func _create_arpeggio(freqs: Array, duration: float) -> AudioStreamWAV:
-	var sample_rate: int = 22050
+	var sample_rate: int = 11025
 	var num_samples: int = int(sample_rate * duration)
 	var data: PackedByteArray = PackedByteArray()
 	data.resize(num_samples)
@@ -140,7 +140,7 @@ func _create_arpeggio(freqs: Array, duration: float) -> AudioStreamWAV:
 
 
 func _create_click_tone(duration: float) -> AudioStreamWAV:
-	var sample_rate: int = 22050
+	var sample_rate: int = 11025
 	var num_samples: int = int(sample_rate * duration)
 	var data: PackedByteArray = PackedByteArray()
 	data.resize(num_samples)
@@ -159,16 +159,16 @@ func _create_click_tone(duration: float) -> AudioStreamWAV:
 
 
 func _start_ambient_sky_drone() -> void:
-	# Subtle loopable atmospheric drone
-	var sample_rate: int = 22050
-	var duration: float = 4.0
+	# Optimized loopable atmospheric sky drone (seamless 1-second harmonic period)
+	var sample_rate: int = 11025
+	var duration: float = 1.0
 	var num_samples: int = int(sample_rate * duration)
 	var data: PackedByteArray = PackedByteArray()
 	data.resize(num_samples)
 
 	for i in range(num_samples):
 		var t: float = float(i) / sample_rate
-		var val: float = (sin(t * 110.0 * TAU) * 0.4 + sin(t * 164.81 * TAU) * 0.3) * 0.25
+		var val: float = (sin(t * 110.0 * TAU) * 0.4 + sin(t * 165.0 * TAU) * 0.3) * 0.25
 		data[i] = int(clampi(int(val * 127.0) + 128, 0, 255))
 
 	var wav = AudioStreamWAV.new()
@@ -177,6 +177,7 @@ func _start_ambient_sky_drone() -> void:
 	wav.loop_mode = AudioStreamWAV.LOOP_FORWARD
 	wav.data = data
 
-	music_player.stream = wav
-	music_player.volume_db = linear_to_db(maxf(0.001, music_volume)) - 10.0
-	music_player.play()
+	if music_player != null and music_player.is_inside_tree():
+		music_player.stream = wav
+		music_player.volume_db = linear_to_db(maxf(0.001, music_volume)) - 10.0
+		music_player.play()

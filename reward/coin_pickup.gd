@@ -1,8 +1,10 @@
 extends Area3D
 
 ## Collectible Coin Pickup: Visually bright gold coin with bobbing, rotation, light, and magnetic attraction.
+## Supports zero-allocation object pooling via PoolManager and mobile lighting optimization.
 
 @export var coin_value: int = 1
+@export var skip_ground_raycast: bool = false
 
 var player: Node3D = null
 var is_collected: bool = false
@@ -10,6 +12,7 @@ var move_speed: float = 0.0
 var base_y: float = 0.0
 var bob_time: float = 0.0
 var collect_tween: Tween = null
+var is_pooled: bool = false
 
 @onready var coin_visual: Node3D = $CoinVisual
 @onready var sparkle: MeshInstance3D = $Sparkle
@@ -18,11 +21,52 @@ var collect_tween: Tween = null
 
 
 func _ready() -> void:
-	body_entered.connect(_on_body_entered)
+	if not body_entered.is_connected(_on_body_entered):
+		body_entered.connect(_on_body_entered)
 	base_y = position.y
 	bob_time = randf() * TAU
-	_ensure_above_ground()
+	_apply_mobile_light_optimization()
+	if not skip_ground_raycast:
+		_ensure_above_ground()
 	_find_player()
+
+
+func _apply_mobile_light_optimization() -> void:
+	if omni_light == null:
+		return
+	var gm = get_node_or_null("/root/GraphicsManager")
+	var is_mobile = OS.has_feature("mobile") or OS.get_name() in ["Android", "iOS"]
+	# On mobile or Low/Medium quality, disable omni lights on pickups to save GPU fill rate & light clustering
+	if is_mobile or (gm != null and gm.current_quality != "high"):
+		omni_light.visible = false
+	else:
+		omni_light.visible = true
+
+
+func reset_for_pool(new_pos: Vector3) -> void:
+	is_pooled = true
+	is_collected = false
+	move_speed = 0.0
+	global_position = new_pos
+	base_y = new_pos.y
+	bob_time = randf() * TAU
+	scale = Vector3.ONE
+	visible = true
+
+	if coin_visual != null:
+		coin_visual.rotation = Vector3.ZERO
+		coin_visual.scale = Vector3.ONE
+
+	if sparkle != null:
+		sparkle.rotation = Vector3.ZERO
+		sparkle.scale = Vector3.ONE
+
+	_apply_mobile_light_optimization()
+
+	if collision_shape != null:
+		collision_shape.disabled = false
+	monitoring = true
+	monitorable = true
 
 
 func _ensure_above_ground() -> void:
@@ -45,7 +89,7 @@ func _find_player() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if is_collected:
+	if is_collected or not visible:
 		return
 
 	# Smooth rotation and bobbing
@@ -105,12 +149,11 @@ func collect() -> void:
 	if rm != null and rm.has_method("add_coins"):
 		rm.add_coins(coin_value)
 
-	# New Polish Collection Animation:
+	# Polish Collection Animation:
 	# 1. Rise quickly upward by ~1.2m
 	# 2. Spin rapidly around Y-axis (2 full rotations = TAU * 2)
 	# 3. Smoothly scale down to 0
-	# 4. Golden flash / sparkle pulse
-	# 5. Quick total duration (~0.4s)
+	# 4. Quick total duration (~0.4s)
 	var target_pos: Vector3 = global_position + Vector3.UP * 1.25
 	collect_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	collect_tween.tween_property(self, "global_position", target_pos, 0.4)
@@ -118,7 +161,7 @@ func collect() -> void:
 		collect_tween.tween_property(coin_visual, "rotation:y", coin_visual.rotation.y + TAU * 2.0, 0.4)
 	collect_tween.tween_property(self, "scale", Vector3.ZERO, 0.4)
 
-	if omni_light != null:
+	if omni_light != null and omni_light.visible:
 		omni_light.light_energy = 3.5
 		collect_tween.tween_property(omni_light, "light_energy", 0.0, 0.4)
 
@@ -126,4 +169,12 @@ func collect() -> void:
 		collect_tween.tween_property(sparkle, "scale", sparkle.scale * 2.0, 0.2)
 		collect_tween.tween_property(sparkle, "scale", Vector3.ZERO, 0.2).set_delay(0.2)
 
-	collect_tween.chain().tween_callback(queue_free)
+	collect_tween.chain().tween_callback(self._on_collect_finished)
+
+
+func _on_collect_finished() -> void:
+	var pm = get_node_or_null("/root/PoolManager")
+	if is_pooled and pm != null and pm.has_method("recycle_coin"):
+		pm.recycle_coin(self)
+	else:
+		queue_free()

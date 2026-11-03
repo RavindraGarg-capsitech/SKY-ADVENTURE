@@ -59,6 +59,7 @@ func apply_current_settings() -> void:
 				vp.msaa_3d = Viewport.MSAA_DISABLED
 				RenderingServer.directional_shadow_atlas_set_size(512, true)
 				_set_scene_shadows(false)
+				_apply_environment_settings()
 
 			"medium":
 				# 85% resolution scaling (balanced sharpness and speed for modern phones)
@@ -67,6 +68,7 @@ func apply_current_settings() -> void:
 				vp.msaa_3d = Viewport.MSAA_DISABLED
 				RenderingServer.directional_shadow_atlas_set_size(1024, true)
 				_set_scene_shadows(true)
+				_apply_environment_settings()
 
 			"high":
 				# 100% native resolution
@@ -75,6 +77,27 @@ func apply_current_settings() -> void:
 				vp.msaa_3d = Viewport.MSAA_2X
 				RenderingServer.directional_shadow_atlas_set_size(2048, true)
 				_set_scene_shadows(true)
+				_apply_environment_settings()
+
+
+func _apply_environment_settings() -> void:
+	var scene = get_tree().current_scene
+	if scene == null:
+		return
+	var env_nodes = scene.find_children("*", "WorldEnvironment", true, false)
+	for env_node in env_nodes:
+		if env_node is WorldEnvironment and env_node.environment != null:
+			var env = env_node.environment
+			match current_quality:
+				"low":
+					env.ssao_enabled = false
+					env.glow_enabled = false
+				"medium":
+					env.ssao_enabled = false
+					env.glow_enabled = true
+				"high":
+					env.ssao_enabled = (not is_mobile_device)
+					env.glow_enabled = true
 
 
 func _set_scene_shadows(enable: bool) -> void:
