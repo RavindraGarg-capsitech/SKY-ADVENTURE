@@ -47,6 +47,7 @@ unique_name_in_owner = true
 transform = Transform3D(0.96643305, 0, 0, 0, 1, 0, -3.7252903e-09, 0, 1, 0.45306218, -0.07097292, -1.5101163)
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=911291338]
+mouse_filter = 2
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5

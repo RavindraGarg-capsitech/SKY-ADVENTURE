@@ -122,10 +122,22 @@ const LOOK_SENSITIVITY: float = 0.2
 func _ready() -> void:
 	if not is_in_group("player"):
 		add_to_group("player")
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	is_mobile_device = OS.has_feature("mobile") or OS.get_name() in ["Android", "iOS"]
+
+	var gm = get_node_or_null("/root/GameManager")
+	if gm != null:
+		if gm.is_playing():
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	else:
+		if not is_mobile_device:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
 	current_health = max_health
 	health_changed.emit(current_health, max_health)
-	is_mobile_device = DisplayServer.is_touchscreen_available() or OS.has_feature("mobile") or OS.get_name() in ["Android", "iOS"]
 
 	# Platform-following and stable floor physics
 	floor_snap_length = 0.4
@@ -144,6 +156,38 @@ func _ready() -> void:
 
 	var wdata = get_current_weapon_data()
 	weapon_changed.emit(current_weapon_id, wdata["name"], wdata["info"], wdata["icon"])
+
+
+func _can_rotate_with_mouse() -> bool:
+	if DisplayServer.get_name() == "headless":
+		return true
+	return Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED
+
+
+func _input(event: InputEvent) -> void:
+	if is_dead:
+		return
+
+	# PC mouse camera rotation:
+	# Handled in _input to ensure camera rotation is NEVER blocked, swallowed, or consumed
+	# when holding down Left Mouse Button to shoot, or by any UI Control overlays.
+	if event is InputEventMouseMotion:
+		if _can_rotate_with_mouse():
+			_rotate_camera(event.relative)
+			get_viewport().set_input_as_handled()
+			return
+
+	# Capture mouse mode on left mouse button click during active gameplay
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			var gm = get_node_or_null("/root/GameManager")
+			var can_capture: bool = true
+			if gm != null:
+				can_capture = gm.is_playing()
+			else:
+				can_capture = not get_tree().paused
+			if can_capture and Input.get_mouse_mode() != Input.MOUSE_MODE_CAPTURED:
+				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -169,15 +213,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.keycode == KEY_Q:
 			cycle_weapon()
 
-	# PC mouse camera rotation
+	# Fallback camera rotation in unhandled_input if uncaptured or direct event injection
 	if event is InputEventMouseMotion:
-		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+		if _can_rotate_with_mouse():
 			_rotate_camera(event.relative)
-
-	# Capture mouse on left click
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 
 func _rotate_camera(relative: Vector2) -> void:

@@ -32,7 +32,8 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 	# Detect mobile touch environment - auto hide on desktop PC
-	var is_touch: bool = DisplayServer.is_touchscreen_available() or OS.has_feature("mobile") or OS.get_name() in ["Android", "iOS"] or force_show
+	var is_mobile_os: bool = OS.has_feature("mobile") or OS.get_name() in ["Android", "iOS"]
+	var is_touch: bool = is_mobile_os or force_show
 	visible = is_touch
 
 	if joystick != null:

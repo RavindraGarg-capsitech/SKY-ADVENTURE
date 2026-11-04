@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c6508k0b81h3u"]
 
-[ext_resource type="Script" path="res://ui/hud.gd" id="1_hud01"]
-[ext_resource type="Script" path="res://ui/damage_indicator.gd" id="2_dmgind"]
+[ext_resource type="Script" uid="uid://bb04x2h5gbqba" path="res://ui/hud.gd" id="1_hud01"]
+[ext_resource type="Script" uid="uid://byllpudoquho1" path="res://ui/damage_indicator.gd" id="2_dmgind"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0.12, 0.12, 0.14, 0.8)
@@ -22,78 +22,11 @@ font_size = 20
 outline_size = 4
 outline_color = Color(0, 0, 0, 0.9)
 
-[sub_resource type="LabelSettings" id="LabelSettings_wave"]
-font_size = 24
-font_color = Color(1, 0.84, 0.2, 1)
-outline_size = 6
-outline_color = Color(0, 0, 0, 0.9)
-
-[sub_resource type="LabelSettings" id="LabelSettings_info"]
-font_size = 20
-font_color = Color(0.92, 0.92, 0.92, 1)
-outline_size = 4
-outline_color = Color(0, 0, 0, 0.9)
-
-[sub_resource type="LabelSettings" id="LabelSettings_score"]
-font_size = 22
-font_color = Color(0.4, 0.85, 1, 1)
-outline_size = 5
-outline_color = Color(0, 0, 0, 0.9)
-
-[sub_resource type="LabelSettings" id="LabelSettings_banner_title"]
-font_size = 46
-font_color = Color(1, 0.85, 0.1, 1)
-outline_size = 10
-outline_color = Color(0.05, 0.05, 0.05, 0.95)
-
-[sub_resource type="LabelSettings" id="LabelSettings_banner_sub"]
-font_size = 24
-font_color = Color(1, 1, 1, 1)
-outline_size = 6
-outline_color = Color(0.1, 0.1, 0.1, 0.9)
-
-[sub_resource type="LabelSettings" id="LabelSettings_countdown_title"]
-font_size = 38
-font_color = Color(0.4, 0.85, 1, 1)
-outline_size = 8
-outline_color = Color(0.05, 0.05, 0.05, 0.95)
-
-[sub_resource type="LabelSettings" id="LabelSettings_countdown_sub"]
-font_size = 28
-font_color = Color(1, 0.9, 0.2, 1)
-outline_size = 6
-outline_color = Color(0, 0, 0, 0.95)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_boss_fill"]
-bg_color = Color(0.85, 0.15, 0.2, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="LabelSettings" id="LabelSettings_boss_title"]
-font_size = 22
-font_color = Color(1, 0.3, 0.3, 1)
-outline_size = 6
-outline_color = Color(0, 0, 0, 0.95)
-
 [sub_resource type="LabelSettings" id="LabelSettings_heal"]
 font_size = 20
 font_color = Color(0.2, 1, 0.4, 1)
 outline_size = 5
 outline_color = Color(0, 0, 0, 0.95)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pause_btn"]
-bg_color = Color(0.12, 0.16, 0.24, 0.85)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.4, 0.75, 1, 0.85)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_weapon_panel"]
 bg_color = Color(0.1, 0.12, 0.18, 0.82)
@@ -125,8 +58,6 @@ corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
 [sub_resource type="LabelSettings" id="LabelSettings_shield_text"]
-font_size = 16
-font_color = Color(1, 1, 1, 1)
 outline_size = 5
 outline_color = Color(0, 0.2, 0.4, 0.95)
 
@@ -136,10 +67,76 @@ font_color = Color(0.2, 0.9, 1, 1)
 outline_size = 6
 outline_color = Color(0, 0, 0, 0.95)
 
-[node name="HUD" type="CanvasLayer"]
+[sub_resource type="LabelSettings" id="LabelSettings_wave"]
+font_size = 40
+font_color = Color(1, 0.84, 0.2, 1)
+outline_size = 6
+outline_color = Color(0, 0, 0, 0.9)
+
+[sub_resource type="LabelSettings" id="LabelSettings_info"]
+font_size = 40
+font_color = Color(0.92, 0.92, 0.92, 1)
+outline_size = 4
+outline_color = Color(0, 0, 0, 0.9)
+
+[sub_resource type="LabelSettings" id="LabelSettings_score"]
+font_size = 40
+font_color = Color(0.4, 0.85, 1, 1)
+outline_size = 5
+outline_color = Color(0, 0, 0, 0.9)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pause_btn"]
+bg_color = Color(0.12, 0.16, 0.24, 0.85)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.75, 1, 0.85)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="LabelSettings" id="LabelSettings_banner_title"]
+font_size = 46
+font_color = Color(1, 0.85, 0.1, 1)
+outline_size = 10
+outline_color = Color(0.05, 0.05, 0.05, 0.95)
+
+[sub_resource type="LabelSettings" id="LabelSettings_banner_sub"]
+font_size = 24
+outline_size = 6
+outline_color = Color(0.1, 0.1, 0.1, 0.9)
+
+[sub_resource type="LabelSettings" id="LabelSettings_countdown_title"]
+font_size = 38
+font_color = Color(0.4, 0.85, 1, 1)
+outline_size = 8
+outline_color = Color(0.05, 0.05, 0.05, 0.95)
+
+[sub_resource type="LabelSettings" id="LabelSettings_countdown_sub"]
+font_size = 28
+font_color = Color(1, 0.9, 0.2, 1)
+outline_size = 6
+outline_color = Color(0, 0, 0, 0.95)
+
+[sub_resource type="LabelSettings" id="LabelSettings_boss_title"]
+font_size = 22
+font_color = Color(1, 0.3, 0.3, 1)
+outline_size = 6
+outline_color = Color(0, 0, 0, 0.95)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_boss_fill"]
+bg_color = Color(0.85, 0.15, 0.2, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="HUD" type="CanvasLayer" unique_id=1656101316]
 script = ExtResource("1_hud01")
 
-[node name="DamageIndicator" type="Control" parent="."]
+[node name="DamageIndicator" type="Control" parent="." unique_id=1429418690]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -149,7 +146,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("2_dmgind")
 
-[node name="HealthContainer" type="Control" parent="."]
+[node name="HealthContainer" type="Control" parent="." unique_id=1121791745]
 layout_mode = 3
 anchors_preset = 0
 offset_left = 40.0
@@ -157,7 +154,7 @@ offset_top = 40.0
 offset_right = 380.0
 offset_bottom = 80.0
 
-[node name="HealthBar" type="ProgressBar" parent="HealthContainer"]
+[node name="HealthBar" type="ProgressBar" parent="HealthContainer" unique_id=1853547334]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -169,7 +166,7 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
 value = 100.0
 show_percentage = false
 
-[node name="HealthLabel" type="Label" parent="HealthContainer/HealthBar"]
+[node name="HealthLabel" type="Label" parent="HealthContainer/HealthBar" unique_id=1267236761]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -181,7 +178,7 @@ label_settings = SubResource("LabelSettings_health")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="HealNotification" type="Label" parent="HealthContainer"]
+[node name="HealNotification" type="Label" parent="HealthContainer" unique_id=210030398]
 visible = false
 layout_mode = 1
 anchors_preset = 12
@@ -195,36 +192,35 @@ grow_vertical = 0
 text = "+25 HP Recovered!"
 label_settings = SubResource("LabelSettings_heal")
 
-[node name="WeaponContainer" type="PanelContainer" parent="."]
-layout_mode = 0
+[node name="WeaponContainer" type="PanelContainer" parent="." unique_id=1207234565]
 offset_left = 40.0
 offset_top = 96.0
 offset_right = 380.0
 offset_bottom = 152.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_weapon_panel")
 
-[node name="Margin" type="MarginContainer" parent="WeaponContainer"]
+[node name="Margin" type="MarginContainer" parent="WeaponContainer" unique_id=849582677]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 6
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 6
 
-[node name="VBox" type="VBoxContainer" parent="WeaponContainer/Margin"]
+[node name="VBox" type="VBoxContainer" parent="WeaponContainer/Margin" unique_id=35627175]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="WeaponLabel" type="Label" parent="WeaponContainer/Margin/VBox"]
+[node name="WeaponLabel" type="Label" parent="WeaponContainer/Margin/VBox" unique_id=1501596991]
 layout_mode = 2
 text = "WEAPON: Standard Blaster"
 label_settings = SubResource("LabelSettings_weapon_name")
 
-[node name="WeaponSubLabel" type="Label" parent="WeaponContainer/Margin/VBox"]
+[node name="WeaponSubLabel" type="Label" parent="WeaponContainer/Margin/VBox" unique_id=384128360]
 layout_mode = 2
 text = "1x DMG • Semi-Auto • Keys [1-5] / [Q] to switch"
 label_settings = SubResource("LabelSettings_weapon_sub")
 
-[node name="ShieldContainer" type="Control" parent="."]
+[node name="ShieldContainer" type="Control" parent="." unique_id=1891104722]
 visible = false
 layout_mode = 3
 anchors_preset = 0
@@ -233,7 +229,7 @@ offset_top = 160.0
 offset_right = 380.0
 offset_bottom = 196.0
 
-[node name="ShieldBar" type="ProgressBar" parent="ShieldContainer"]
+[node name="ShieldBar" type="ProgressBar" parent="ShieldContainer" unique_id=978900569]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -245,7 +241,7 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_shield_fill")
 value = 100.0
 show_percentage = false
 
-[node name="ShieldLabel" type="Label" parent="ShieldContainer/ShieldBar"]
+[node name="ShieldLabel" type="Label" parent="ShieldContainer/ShieldBar" unique_id=1948961793]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -257,7 +253,7 @@ label_settings = SubResource("LabelSettings_shield_text")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PowerupNotification" type="Label" parent="."]
+[node name="PowerupNotification" type="Label" parent="." unique_id=1888051438]
 visible = false
 anchors_preset = 5
 anchor_left = 0.5
@@ -272,56 +268,55 @@ label_settings = SubResource("LabelSettings_powerup_notif")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="WaveContainer" type="VBoxContainer" parent="."]
+[node name="WaveContainer" type="VBoxContainer" parent="." unique_id=369359326]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -390.0
-offset_top = 40.0
-offset_right = -100.0
-offset_bottom = 180.0
+offset_left = -484.0
+offset_top = 38.0
+offset_right = -194.0
+offset_bottom = 178.0
 grow_horizontal = 0
 theme_override_constants/separation = 4
-alignment = 0
 
-[node name="WaveLabel" type="Label" parent="WaveContainer"]
+[node name="WaveLabel" type="Label" parent="WaveContainer" unique_id=1559004690]
 layout_mode = 2
 text = "Wave: 1"
 label_settings = SubResource("LabelSettings_wave")
 horizontal_alignment = 2
 
-[node name="EnemiesLabel" type="Label" parent="WaveContainer"]
+[node name="EnemiesLabel" type="Label" parent="WaveContainer" unique_id=915304471]
 layout_mode = 2
 text = "Enemies: 0"
 label_settings = SubResource("LabelSettings_info")
 horizontal_alignment = 2
 
-[node name="CoinsLabel" type="Label" parent="WaveContainer"]
+[node name="CoinsLabel" type="Label" parent="WaveContainer" unique_id=1837078370]
 layout_mode = 2
 text = "Coins: 0"
 label_settings = SubResource("LabelSettings_info")
 horizontal_alignment = 2
 
-[node name="ScoreLabel" type="Label" parent="WaveContainer"]
+[node name="ScoreLabel" type="Label" parent="WaveContainer" unique_id=1872990278]
 layout_mode = 2
 text = "Score: 0"
 label_settings = SubResource("LabelSettings_score")
 horizontal_alignment = 2
 
-[node name="PauseButton" type="Button" parent="."]
+[node name="PauseButton" type="Button" parent="." unique_id=1056932779]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -84.0
-offset_top = 38.0
-offset_right = -36.0
-offset_bottom = 86.0
+offset_left = -152.0
+offset_top = 26.0
+offset_right = -15.0
+offset_bottom = 155.0
 grow_horizontal = 0
 theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_pause_btn")
 text = "⏸"
 
-[node name="WaveClearedContainer" type="Control" parent="."]
+[node name="WaveClearedContainer" type="Control" parent="." unique_id=1425385019]
 visible = false
 layout_mode = 3
 anchors_preset = 8
@@ -336,7 +331,7 @@ offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Title" type="Label" parent="WaveClearedContainer"]
+[node name="Title" type="Label" parent="WaveClearedContainer" unique_id=1302717386]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -347,7 +342,7 @@ label_settings = SubResource("LabelSettings_banner_title")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SubTitle" type="Label" parent="WaveClearedContainer"]
+[node name="SubTitle" type="Label" parent="WaveClearedContainer" unique_id=404652734]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -361,7 +356,7 @@ label_settings = SubResource("LabelSettings_banner_sub")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CountdownContainer" type="Control" parent="."]
+[node name="CountdownContainer" type="Control" parent="." unique_id=950977186]
 visible = false
 layout_mode = 3
 anchors_preset = 8
@@ -376,7 +371,7 @@ offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Title" type="Label" parent="CountdownContainer"]
+[node name="Title" type="Label" parent="CountdownContainer" unique_id=1047909381]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -387,7 +382,7 @@ label_settings = SubResource("LabelSettings_countdown_title")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SubTitle" type="Label" parent="CountdownContainer"]
+[node name="SubTitle" type="Label" parent="CountdownContainer" unique_id=1672216948]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -401,7 +396,7 @@ label_settings = SubResource("LabelSettings_countdown_sub")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="BossContainer" type="Control" parent="."]
+[node name="BossContainer" type="Control" parent="." unique_id=904616441]
 visible = false
 layout_mode = 3
 anchors_preset = 5
@@ -413,7 +408,7 @@ offset_right = 300.0
 offset_bottom = 105.0
 grow_horizontal = 2
 
-[node name="BossNameLabel" type="Label" parent="BossContainer"]
+[node name="BossNameLabel" type="Label" parent="BossContainer" unique_id=1649257511]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -423,7 +418,7 @@ text = "SKY OVERLORD"
 label_settings = SubResource("LabelSettings_boss_title")
 horizontal_alignment = 1
 
-[node name="BossHealthBar" type="ProgressBar" parent="BossContainer"]
+[node name="BossHealthBar" type="ProgressBar" parent="BossContainer" unique_id=1099133257]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -437,7 +432,7 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_boss_fill")
 value = 100.0
 show_percentage = false
 
-[node name="BossHealthLabel" type="Label" parent="BossContainer/BossHealthBar"]
+[node name="BossHealthLabel" type="Label" parent="BossContainer/BossHealthBar" unique_id=815009387]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
